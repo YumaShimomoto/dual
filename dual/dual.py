@@ -10,42 +10,69 @@
 import numpy as np
 
 
-class dual():
+class Dual():
     def __init__(self, re=0, im=0):
-        if not isinstance(re, np.ndarray):
-            re = np.array(re)
-        if not isinstance(im, np.ndarray):
-            im = np.array(im)
-        im = np.broadcast_to(re.shape)
-
-        _re = np.zeros(re.shape)
-        _im = np.zeres(im.shape)
-
+        # 入力整形
+        # Format input
         if is_dual(re):
-            _re = re.re
-            _im = re.im
+            if isinstance(re.re, np.ndarray):
+                # 引数reが「Dual型である」かつ「ndarray型である」
+                # Argument 're' is "Type is 'Dual'" and "Type is 'ndarray'"
+                re_re = re.re
+                re_im = re.im
+            else:
+                re_re = np.array(re.re)
+                re_im = np.array(re.im)
         else:
-            _re = re
+            if isinstance(re, np.ndarray):
+                # 引数reが「Dual型ではない」かつ「ndarray型である」
+                # Argument 're' is "Type isn't 'Dual'" and "Type is 'ndarray'"
+                re_re = re
+                re_im = np.zeros(re.shape)
+            else:
+                re_re = np.array(re)
+                re_im = np.zeros(re_re.shape)
         if is_dual(im):
-            _re -= im.im
-            _im += im.re
+            if isinstance(im.re, np.ndarray):
+                # 引数imが「Dual型である」かつ「ndarray型である」
+                # Argument 'im' is "Type is 'Dual'" and "Type is 'ndarray'"
+                im_re = im.re
+                im_im = im.im
+            else:
+                im_re = np.array(im.re)
+                im_im = np.array(im.im)
         else:
-            _im += im
+            if isinstance(im, np.ndarray):
+                # 引数imが「Dual型ではない」かつ「ndarray型である」
+                # Argument 'im' is "Type isn't 'Dual'" and "Type is 'ndarray'"
+                im_re = im
+                im_im = np.zeros(im.shape)
+            else:
+                im_re = np.array(im)
+                im_im = np.zeros(im_re.shape)
+
+        # re = x + ex', im = y + ey' の時   # When "re = ~~, im = ~~"
+        # Dual(re, im) = re + eim
+        #              = (x + ex') + e(y + ey')
+        #              = x + e(x' + y')
+        _re = np.array(re_re, dtype=np.float)
+        _im = np.array(re_im + im_re, dtype=np.float)
 
         self.__dict__["re"] = _re
         self.__dict__["im"] = _im
+        self.__dict__["_i"] = 0
 
     def __repr__(self):
-        if not self.im:
-            return 'dual({})'.format(self.re)
+        if np.ndim(self.re) <= 1:
+            return "Dual({}, {})".format(self.re, self.im)
         else:
-            return 'dual({},{})'.format(self.re, self.im)
+            return "Dual(\n{}, \n{})".format(self.re, self.im)
 
     def __str__(self):
-        if not self.im:
-            return repr(self.re)
+        if np.ndim(self.re) <= 1:
+            return "Dual({}, {})".format(self.re, self.im)
         else:
-            return 'dual({},{})'.format(self.re, self.im)
+            return "Dual(\n{}, \n{})".format(self.re, self.im)
 
     def __lt__(self, other):
         """
@@ -55,7 +82,7 @@ class dual():
         If use norm-order, activate commentouted one.
         """
         other = to_dual(other)
-        return (self.re < other.re) or ((self.re == other.re) and self.im < other.im)
+        return (self.re < other.re) | ((self.re == other.re) & (self.im < other.im))
 
 #    def __lt__(self, other):
 #        """
@@ -66,46 +93,79 @@ class dual():
 #        return self.__abs__() < other.__abs__()
 
     def __le__(self, other):
-        return self.__lt__(other) or self.__eq__(other)
+        return self.__lt__(other) | self.__eq__(other)
 
     def __eq__(self, other):
         other = to_dual(other)
-        return self.re == other.re and self.im == other.im
+        return (self.re == other.re) & (self.im == other.im)
 
     def __ne__(self, other):
-        return not self.__eq__(other)
+        return ~ self.__eq__(other)
 
     def __gt__(self, other):
-        return not self.__le__(other)
+        return ~ self.__le__(other)
 
     def __ge__(self, other):
-        return not self.__lt__(other)
+        return ~ self.__lt__(other)
 
     def __hash__(self):
-        if not self.im:
-            return hash(self.re)
-        return hash((self.re, self.im))
+        if len(self) == 1:
+            if self.im:
+                return hash((float(self.re), float(self.im)))
+            else:
+                return hash(float(self.re))
+        else:
+            if np.all(self.im == 0):
+                return int(np.sum([hash(self.re[i]) for i in range(len(self))]))
+            else:
+                return int(np.sum([hash((self.re[i], self.im[i])) for i in range(len(self))]))
 
     def __bool__(self):
-        return self.__nonzero__()
+        return bool(np.any(self.__nonzero__()))
 
     def __setattr__(self, name, value):
-        raise TypeError('Dual numbers are immutable.')
+        if name not in self.__dict__:
+            raise TypeError("Dual number can't add attribute.")
+        else:
+            self.__dict__[name] = value
 
     def __len__(self):
-        return len(self.re)
+        try:
+            return len(self.re)
+        except:
+            return 1
 
     def __getitem__(self, key):
-        return Dual(self.re[key], self.im[key])
+        try:
+            return Dual(self.re[key], self.im[key])
+        except:
+            if self.__len__() == 1:
+                return Dual(self.re, self.im)
+            else:
+                raise KeyError
 
     def __setitem__(self, key, value):
         value = to_dual(value)
-        self.re[key] = value.re
-        self.im[key] = value.im
+        try:
+            self.re[key] = value.re
+            self.im[key] = value.im
+        except:
+            if self.__len__() == 1:
+                self.re = value.re
+                self.im = value.im
+            else:
+                raise KeyError
 
     def __delitem__(self, key):
-        self.re[key] = 0
-        self.im[key] = 0
+        try:
+            self.re[key] = 0
+            self.im[key] = 0
+        except:
+            if self.__len__() == 1:
+                self.re = 0
+                self.im = 0
+            else:
+                raise KeyError
 
     def __iter__(self):
         self._i = 0
@@ -122,7 +182,7 @@ class dual():
     def __reversed__(self):
         self._i = self.__len__() - 1
         while self._i >= 0:
-            yield Dual(self.re[self._i]. self.im[self._i])
+            yield Dual(self.re[self._i], self.im[self._i])
             self._i -= 1
 
     def __contains__(self, item):
@@ -143,15 +203,83 @@ class dual():
     def __matmul__(self, other):
         """
         python3.5以上かつNumpy1.10以上で実装されている行列積演算子@の動作定義
-        Define behavior of matrix multiplication operator '@' implemented in python3.5 or higher and Numpy 1.10 or higher.
+        Define behavior of matrix product operator '@' implemented in python3.5 or higher and Numpy 1.10 or higher.
         """
         other = to_dual(other)
-        return Dual(self.re @ other.re, self.im @ other.re + self.re @ other.im)
+
+        # 全て行列に変換する
+        # Convert all to matrix.
+        if np.ndim(self.re) == 0:
+            # 点 point
+            self_shape = "point"
+            self_buf = Dual(np.array([[self.re]]), np.array([[self.im]]))
+        elif np.ndim(self.re) == 1:
+            # ベクトル vector
+            self_shape = "vector"
+            self_buf = Dual(np.array([self.re]), np.array([self.im]))
+        else:
+            # 行列 matrix
+            self_shape = "matrix"
+            self_buf = Dual(np.copy(self.re), np.copy(self.im))
+        if np.ndim(other.re) == 0:
+            other_shape = "point"
+            other_buf = Dual(np.array([[other.re]]), np.array([[other.im]]))
+        elif np.ndim(other.re) == 1:
+            other_shape = "vector"
+            other_buf = Dual(np.array([other.re]), np.array([other.im]))
+        else:
+            other_shape = "matrix"
+            other_buf = Dual(np.copy(other.re), np.copy(other.im))
+
+        # 行列積 matrix product
+        # 行列積の制約を満たさない計算はエラーが起こる。
+        # Calculations that do not satisfy the matrix product constraint will result in an error.
+        cal_buf = Dual(self_buf.re @ other_buf.re, \
+                       self_buf.im @ other_buf.re + self_buf.re @ other_buf.im)
+
+        # 形状復元 Shape restoration
+        # (m, n) <= m行n列 'm':number of row, 'n':number of column
+        if self_shape == "point":
+            if other_shape == "point":
+                # (1, 1) @ (1, 1) = (1, 1) => 点 point
+                return Dual(cal_buf.re[0][0], cal_buf.im[0][0])
+            elif other_shape == "vector":
+                # (1, 1) @ (1, n) = (1, n) => 点       point  (n == 1)
+                #                             ベクトル vector (n != 1)
+                if other_buf.re.shape[1] == 1:
+                    return Dual(cal_buf.re[0][0], cal_buf.im[0][0])
+                else:
+                    return Dual(cal_buf.re[0], cal_buf.im[0])
+            else:
+                # (1, 1) @ (1, n) = (1, n) => 点       point  (n == 1)
+                #                             ベクトル vector (n != 1)
+                if other_buf.re.shape[1] == 1:
+                    return Dual(cal_buf.re[0][0], cal_buf.im[0][0])
+                else:
+                    return Dual(cal_buf.re[0], cal_buf.im[0])
+        elif self_shape == "vector":
+            # (1, m) @ (m, n) = (1, n) => 点       point  (n == 1)
+            #                             ベクトル vector (n != 1)
+            if other_buf.re.shape[1] == 1:
+                return Dual(cal_buf.re[0][0], cal_buf.im[0][0])
+            else:
+                return Dual(cal_buf.re[0], cal_buf.im[0])
+        else:
+            # (l, m) @ (m, n) = (l, m) => 点       point   (l == 1 and n == 1)
+            #                             ベクトル vecgtor (l == 1 and n != 1)
+            #                             行列     matrix  (l != 1)
+            if self_buf.re.shape[0] == 1:
+                if other_buf.re.shape[1] == 1:
+                    return Dual(cal_buf.re[0][0], cal_buf.im[0][0])
+                else:
+                    return Dual(cal_buf.re[0], cal_buf.im[0])
+            else:
+                return cal_buf
 
     def __truediv__(self, other):
         other = to_dual(other)
         d = other.re * other.re
-        if not d:
+        if np.all(~d):
             raise ZeroDivisionError("math domain error")
         return Dual(self.re * other.re / d, (self.im * other.re - self.re * other.im) / d)
 
@@ -309,7 +437,32 @@ class dual():
     def __ceil__(self):
         return Dual(np.ceil(self.re), np.ceil(self.im))
 
+    def __nonzero__(self):
+        return ~ ((self.re == 0) & (self.im == 0))
+
     def assign(self, other):
         other = to_dual(other)
         self.re = other.re
         self.im = other.im
+
+    @property
+    def T(self):
+        try:
+            if np.ndim(self.re) == 1:
+                return Dual(np.array([self.re]).T, np.array([self.im]).T)
+            else:
+                return Dual(self.re.T, self.im.T)
+        except:
+            return Dual(self.re, self.im)
+
+
+def is_dual(obj):
+    return hasattr(obj, "re") and hasattr(obj, "im")
+
+def to_dual(obj):
+    if is_dual(obj):
+        return obj
+    elif isinstance(obj, tuple):
+        return Dual(*obj)
+    else:
+        return Dual(obj)
