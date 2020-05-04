@@ -77,8 +77,6 @@ For details, refer to the
 ## Feature
 * Pythonで書かれた二重数のコード
 * Numpyに対応(のつもり)
-  
-    
 * Dual-number code written in Python
 * Support Numpy (I think I did...)
 
@@ -89,8 +87,6 @@ For details, refer to the
 ## TODO
 * Numpyに実装されている数学関数やユーティリティ関数を実装
 * READMEの拡充
-  
-  
 * Implements mathematical and utility functions implemented in Numpy
 * Expansion of README
 
