@@ -19,7 +19,8 @@ To use dual-number.
 などがある。
 論文ではTensorFlowを利用して時間変数tや位置変数xについての偏微分値を計算し、
 [Burgers方程式](https://ja.wikipedia.org/wiki/バーガース方程式)
-という衝撃波などを記述する非線形偏微分方程式を満たすようニューラルネットワークに学習させている。    
+という衝撃波などを記述する非線形偏微分方程式を満たすようニューラルネットワークに学習させている。  
+  
 While studying deep learning, I found the automatic differentiation that is implemented in TensorFlow and dual-number used in that, and made a class to use this.  
 I refer to
 [Wikipedia](https://en.wikipedia.org/wiki/Dual_number)
@@ -42,8 +43,9 @@ In this paper, TensorFlow is used to calculate partial differential values for t
 [tmurakami1234さんのモジュール](https://github.com/tmurakami1234/my_python_module/tree/master/dual)
 を出発点の参考とさせていただき、
 [Pythonの特殊メソッド](https://docs.python.org/ja/3/reference/datamodel.html)
-をNumpyに対応させました。    
-
+をNumpyに対応させました。
+  
+  
 I used
 [Mr. tmurakami1234's module]()
 as a starting point and made
@@ -63,8 +65,9 @@ compatible with Numpy.
 などなど。
 詳しくは
 [テストコード](https://github.com/YumaShimomoto/dual/blob/master/dual/dual_test.py)
-を参考にしてください。    
-
+を参考にしてください。
+  
+  
 """ code lines """
 and so on.
 For details, refer to the
@@ -75,6 +78,7 @@ For details, refer to the
 * Pythonで書かれた二重数のコード
 * Numpyに対応(のつもり)
   
+    
 * Dual-number code written in Python
 * Support Numpy (I think I did...)
 
@@ -85,6 +89,7 @@ For details, refer to the
 ## TODO
 * Numpyに実装されている数学関数やユーティリティ関数を実装
 * READMEの拡充
+  
   
 * Implements mathematical and utility functions implemented in Numpy
 * Expansion of README
