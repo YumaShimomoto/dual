@@ -68,7 +68,7 @@ compatible with Numpy.
 を参考にしてください。
   
   
-""" code lines """
+""" code lines """  
 and so on.
 For details, refer to the
 [test code](https://github.com/YumaShimomoto/dual/blob/master/dual/dual_test.py)
