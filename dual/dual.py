@@ -11,7 +11,7 @@ import numpy as np
 
 
 class Dual():
-    def __init__(self, re=0, im=0):
+    def __init__(self, re=0, im=0, dtype=np.float):
         # 入力整形
         # Format input
         if is_dual(re):
@@ -55,8 +55,8 @@ class Dual():
         # Dual(re, im) = re + eim
         #              = (x + ex') + e(y + ey')
         #              = x + e(x' + y')
-        _re = np.array(re_re, dtype=np.float)
-        _im = np.array(re_im + im_re, dtype=np.float)
+        _re = np.array(re_re, dtype=dtype)
+        _im = np.array(re_im + im_re, dtype=dtype)
 
         self.__dict__["re"] = _re
         self.__dict__["im"] = _im
@@ -93,20 +93,20 @@ class Dual():
 #        return self.__abs__() < other.__abs__()
 
     def __le__(self, other):
-        return self.__lt__(other) | self.__eq__(other)
+        return (self < other) | (self == other)
 
     def __eq__(self, other):
         other = to_dual(other)
         return (self.re == other.re) & (self.im == other.im)
 
     def __ne__(self, other):
-        return ~ self.__eq__(other)
+        return ~ (self == other)
 
     def __gt__(self, other):
-        return ~ self.__le__(other)
+        return ~ (self <= other)
 
     def __ge__(self, other):
-        return ~ self.__lt__(other)
+        return ~ (self < other)
 
     def __hash__(self):
         if len(self) == 1:
@@ -139,7 +139,7 @@ class Dual():
         try:
             return Dual(self.re[key], self.im[key])
         except:
-            if self.__len__() == 1:
+            if len(self) == 1:
                 return Dual(self.re, self.im)
             else:
                 raise KeyError
@@ -150,7 +150,7 @@ class Dual():
             self.re[key] = value.re
             self.im[key] = value.im
         except:
-            if self.__len__() == 1:
+            if len(self) == 1:
                 self.re = value.re
                 self.im = value.im
             else:
@@ -161,7 +161,7 @@ class Dual():
             self.re[key] = 0
             self.im[key] = 0
         except:
-            if self.__len__() == 1:
+            if len(self) == 1:
                 self.re = 0
                 self.im = 0
             else:
@@ -169,12 +169,12 @@ class Dual():
 
     def __iter__(self):
         self._i = 0
-        while self._i < self.__len__():
+        while self._i < len(self):
             yield Dual(self.re[self._i], self.im[self._i])
             self._i += 1
 
     def __next__(self):
-        if self._i > self.__len__():
+        if self._i > len(self):
             raise StopIteration
         self._i += 1
         return Dual(self.re[self._i - 1], self.im[self._i - 1])
@@ -186,7 +186,7 @@ class Dual():
             self._i -= 1
 
     def __contains__(self, item):
-        return np.any(self.__eq__(item))
+        return np.any(self == item)
 
     def __add__(self, other):
         other = to_dual(other)
@@ -209,11 +209,11 @@ class Dual():
 
         # 全て行列に変換する
         # Convert all to matrix.
-        if np.ndim(self.re) == 0:
+        if self.ndim == 0:
             # 点 point
             self_shape = "point"
             self_buf = Dual(np.array([[self.re]]), np.array([[self.im]]))
-        elif np.ndim(self.re) == 1:
+        elif self.ndim == 1:
             # ベクトル vector
             self_shape = "vector"
             self_buf = Dual(np.array([self.re]), np.array([self.im]))
@@ -221,10 +221,10 @@ class Dual():
             # 行列 matrix
             self_shape = "matrix"
             self_buf = Dual(np.copy(self.re), np.copy(self.im))
-        if np.ndim(other.re) == 0:
+        if other.ndim == 0:
             other_shape = "point"
             other_buf = Dual(np.array([[other.re]]), np.array([[other.im]]))
-        elif np.ndim(other.re) == 1:
+        elif other.ndim == 1:
             other_shape = "vector"
             other_buf = Dual(np.array([other.re]), np.array([other.im]))
         else:
@@ -246,21 +246,21 @@ class Dual():
             elif other_shape == "vector":
                 # (1, 1) @ (1, n) = (1, n) => 点       point  (n == 1)
                 #                             ベクトル vector (n != 1)
-                if other_buf.re.shape[1] == 1:
+                if other_buf.shape[1] == 1:
                     return Dual(cal_buf.re[0][0], cal_buf.im[0][0])
                 else:
                     return Dual(cal_buf.re[0], cal_buf.im[0])
             else:
                 # (1, 1) @ (1, n) = (1, n) => 点       point  (n == 1)
                 #                             ベクトル vector (n != 1)
-                if other_buf.re.shape[1] == 1:
+                if other_buf.shape[1] == 1:
                     return Dual(cal_buf.re[0][0], cal_buf.im[0][0])
                 else:
                     return Dual(cal_buf.re[0], cal_buf.im[0])
         elif self_shape == "vector":
             # (1, m) @ (m, n) = (1, n) => 点       point  (n == 1)
             #                             ベクトル vector (n != 1)
-            if other_buf.re.shape[1] == 1:
+            if other_buf.shape[1] == 1:
                 return Dual(cal_buf.re[0][0], cal_buf.im[0][0])
             else:
                 return Dual(cal_buf.re[0], cal_buf.im[0])
@@ -268,8 +268,8 @@ class Dual():
             # (l, m) @ (m, n) = (l, m) => 点       point   (l == 1 and n == 1)
             #                             ベクトル vecgtor (l == 1 and n != 1)
             #                             行列     matrix  (l != 1)
-            if self_buf.re.shape[0] == 1:
-                if other_buf.re.shape[1] == 1:
+            if self_buf.shape[0] == 1:
+                if other_buf.shape[1] == 1:
                     return Dual(cal_buf.re[0][0], cal_buf.im[0][0])
                 else:
                     return Dual(cal_buf.re[0], cal_buf.im[0])
@@ -279,7 +279,7 @@ class Dual():
     def __truediv__(self, other):
         other = to_dual(other)
         d = other.re * other.re
-        if np.all(~d):
+        if not np.all(d):
             raise ZeroDivisionError("math domain error")
         return Dual(self.re * other.re / d, (self.im * other.re - self.re * other.im) / d)
 
@@ -294,12 +294,62 @@ class Dual():
 
     def __pow__(self, other):
         if is_dual(other):
-            if other.im:
-                if self.im:
-                    raise TypeError("Dual to the Dual power.")
-                else:
-                    return Dual(1, other.im * np.log(self.re))
-            other = other.re
+            # otherがDual型の場合
+            # if the type of 'other' is 'Dual',
+            if self.ndim == 0 and other.ndim == 0:
+                # 点同士の演算はここで行う
+                # Do point-to-point calculations here.
+                if other.im:
+                    if self.im:
+                        raise TypeError("Dual to the Dual power.")
+                    else:
+                        return Dual(1, other.im * np.log(self.re))
+
+                # other.imが0の場合は数値に変換して計算させる。
+                # If 'other.im' is 0, calculate it by converting it to a numerical value.
+                other = other.re
+            elif self.ndim == 0 and other.ndim != 0:
+                # selfは点でotherがベクトルか行列の場合
+                # otherを展開して点同士の計算を行い
+                # 計算結果を一つのDual型にまとめて返す。
+                # If 'self' is a point and 'other' is a vector or matrix,
+                # expand 'other' to calculate points
+                # and return the result as a single Dual value.
+                cal_buf = [self ** n for n in other]
+                return Dual(np.array([obj.re for obj in cal_buf]).reshape(other.shape), \
+                            np.array([obj.im for obj in cal_buf]).reshape(other.shape))
+            elif self.ndim != 0 and other.ndim != 0:
+                # 両方ともベクトルか行列の場合
+                # いずれか一方をブロードキャストし形状を揃え、
+                # それぞれを展開して点同士の計算を行い
+                # 計算結果を一つのDual型にまとめて返す。
+                # If both are vectors or matrices,
+                # one of them is broadcast and the shape are aligned,
+                # points are calculated
+                # and return the result as a single Dual value.
+                try:
+                    self_buf = self.broadcast_to(other.shape)
+                    other_buf = other
+                    shape = other.shape
+                except ValueError:
+                    other_buf = other.broadcast_to(self.shape)
+                    self_buf = self
+                    shape = other.shape
+                cal_buf = [x ** n for x, n in zip(self_buf, other_buf)]
+                return Dual(np.array([obj.re for obj in cal_buf]).reshape(shape), \
+                            np.array([obj.im for obj in cal_buf]).reshape(shape))
+            else:
+                # selfがベクトルか行列でotherが点の場合
+                # selfを展開して点同士の計算を行い
+                # 計算結果を一つのDual型にまとめて返す。
+                # If 'self' is a vector or matrix and 'other' is a point,
+                # expand 'self' to calculate points
+                # and return the result as a single Dual value.
+                cal_buf = [x ** other for x in self]
+                return Dual(np.array([obj.re for obj in cal_buf]).reshape(self.shape), \
+                            np.array([obj.im for obj in cal_buf]).reshape(self.shape))
+        # otherがDual型ではない場合は普通に計算して返す。
+        # If the type of 'other' isn't 'Dual', return Numpy calculations.
         return Dual(np.power(self.re, other), other * np.power(self.re, other - 1) * self.im)
 
     def __lshift__(self, other):
@@ -413,17 +463,19 @@ class Dual():
         raise NotImplemented
 
     def __complex__(self):
-        return np.complex(self.re, self.im)
+        if self.ndim != 0:
+            raise ValueError("Can't convert Dual with vector or matrix to complex.")
+        return complex(self.re, self.im)
 
     def __int__(self):
-        if self.im:
-            return Dual(np.int(self.re), np.int(self.im))
-        return np.int(self.re)
+        if np.any(self.im):
+            raise ValueError("Can't convert Dual with nonzero im to int.")
+        return int(self.re)
 
     def __float__(self):
-        if self.im:
-            return Dual(np.float(self.re), np.float(self.im))
-        return np.float(self.re)
+        if np.any(self.im):
+            raise ValueError("Can't convert Dual with nonzero im to float.")
+        return float(self.re)
 
     def __round__(self, ndigits=0):
         return Dual(np.round(self.re, decimal=ndigits), np.round(self.im, decimal=ndigits))
@@ -445,6 +497,28 @@ class Dual():
         self.re = other.re
         self.im = other.im
 
+    def broadcast_to(self, shape):
+        return Dual(np.broadcast_to(self.re, shape), np.broadcast_to(self.im, shape))
+
+    @property
+    def complex(self):
+        try:
+            return np.array([complex(self.re[i], self.im[i]) for i in range(len(self))])
+        except:
+            return np.array([complex(self)])
+
+    @property
+    def int(self):
+        if np.any(self.im):
+            return Dual(self.re, self.im, dtype=np.int)
+        return np.array(self.re, dtype=np.int)
+
+    @property
+    def float(self):
+        if np.any(self.im):
+            return Dual(self.re, self.im, dtype=np.float)
+        return np.array(self.re, dtype=np.float)
+
     @property
     def T(self):
         try:
@@ -454,6 +528,14 @@ class Dual():
                 return Dual(self.re.T, self.im.T)
         except:
             return Dual(self.re, self.im)
+
+    @property
+    def ndim(self):
+        return np.ndim(self.re)
+
+    @property
+    def shape(self):
+        return self.re.shape
 
 
 def is_dual(obj):
@@ -466,3 +548,9 @@ def to_dual(obj):
         return Dual(*obj)
     else:
         return Dual(obj)
+
+def broadcast_to(obj, shape):
+    if is_dual(obj):
+        return Dual(np.broadcast_to(obj.re, shape), np.broadcast_to(obj.im, shape))
+    else:
+        return np.broadcast_to(obj, shape)

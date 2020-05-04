@@ -245,6 +245,7 @@ def test():
     print("y.T @ w @ x", "失敗", "fail")
     print("y.T @ w @ y", "失敗", "fail")
     print("y.T @ w @ y.T = Dual([[5, 10], [42, 74]])")
+    print("(y.T @ w) @ (y.T @ w) = Dual([[5, 10], [10, 20], [[62, 114], [114, 208]])")
     print("--結果--", "--result--")
     print("x * x = {}".format(x * x))
     print("x * y = {}".format(x * y))
@@ -272,6 +273,160 @@ def test():
     except:
         print("y.T @ w @ y.T", "失敗", "fail")
     print("y.T @ w @ y.T = {}".format(y.T @ w @ y.T))
+    print("(y.T @ w) @ (y.T @ w) = {}".format((y.T @ w) @ (y.T @ w)))
+    print("-------------------------------------------\n")
+
+    print("割り算と剰余・余りのテスト", "test division, floordiv and mod", "\n")
+    print("--期待結果--", "--expected--")
+    print("x / x = Dual(1, 0)")
+    print("x / y = Dual([1, 0.5], [-1, 0])")
+    print("y / w = Dual([1, 1], [-1, -1])")
+    print("z /= y = Dual([1, 2], [3, 3])")
+    print("x // y", "失敗", "fail")
+    print("x % y", "失敗", "fail")
+    print("divmod(x, y)", "失敗", "fail")
+    print("--結果--", "--result--")
+    print("x / x = {}".format(x / x))
+    print("x / y = {}".format(x / y))
+    print("y / w = {}".format(y / w))
+    z /= y
+    print("z /= y = {}".format(z))
+    try:
+        print("x // y = {}".format(x // y), "成功", "succeed")
+    except:
+        print("x // y", "失敗", "fail")
+    try:
+        print("x % y = {}".format(x % y), "成功", "succeed")
+    except:
+        print("x % y", "失敗", "fail")
+    try:
+        print("divmod(x, y) = {}".format(divmod(x, y)), "成功", "succeed")
+    except:
+        print("divmod(x, y)", "失敗", "fail")
+    print("-------------------------------------------\n")
+
+    print("べき乗のテスト", "test exponentiation")
+    print("--期待結果--", "--expected--")
+    print("x ** 2 = Dual(1, 4)")
+    print("y ** 3 = Dual([1, 8], [9, 48])")
+    print("x ** y", "失敗", "fail")
+    print("y ** Dual(2, 0) = Dual([1, 4], [6, 16])")
+    print("v ** y = Dual([1, 1], [0, 0])")
+    print("y ** z", "失敗", "fail")
+    print("y ** Dual([1, 2], [0, 0]) = Dual([1, 4], [3, 16])")
+    print("--結果--", "--result--")
+    print("x ** 2 = {}".format(x ** 2))
+    print("y ** 3 = {}".format(y ** 3))
+    try:
+        print("x ** y = {}".format(x ** y), "成功", "succeed")
+    except:
+        print("x ** y", "失敗", "fail")
+    print("y ** Dual(2, 0) = {}".format(y ** Dual(2, 0)))
+    print("v ** y = {}".format(v ** y))
+    try:
+        print("y ** z = {}".format(y ** z), "成功", "succeed")
+    except:
+        print("y ** z", "失敗", "fail")
+    print("y ** Dual([1, 2], [0, 0]) = {}".format(y ** Dual([1, 2], [0, 0])))
+    print("-------------------------------------------\n")
+
+    print("シフト演算と論理演算のテスト", "test shift and logical operation", "\n")
+    print("--期待結果--", "--expected--")
+    print("x << 1", "失敗", "fail")
+    print("x >> 1", "失敗", "fail")
+    print("x & x", "失敗", "fail")
+    print("x ^ x", "失敗", "fail")
+    print("x | x", "失敗", "fail")
+    print("--結果--", "--result--")
+    try:
+        print("x << 1 = {}".format(x << 1), "成功", "succeed")
+    except:
+        print("x << 1", "失敗", "fail")
+    try:
+        print("x >> 1 = {}".format(x >> 1), "成功", "succeed")
+    except:
+        print("x >> 1", "失敗", "fail")
+    try:
+        print("x & x = {}".format(x & x), "成功", "succeed")
+    except:
+        print("x & x", "失敗", "fail")
+    try:
+        print("x ^ x = {}".format(x ^ x), "成功", "succeed")
+    except:
+        print("x ^ x", "失敗", "fail")
+    try:
+        print("x | x = {}".format(x | x), "成功", "succeed")
+    except:
+        print("x | x", "失敗", "fail")
+    print("-------------------------------------------\n")
+
+    print("__neg__, __pos__, __abs__のテスト", "test __neg__, __pos__, __abs__", "\n")
+    print("--期待結果--", "--expected--")
+    print("-x = Dual(-1, -2)")
+    print("-y = Dual([-1, -2], [-3, -4])")
+    print("+x = Dual(1, 2)")
+    print("+y = Dual([1, 2], [3, 4])")
+    print("abs(x) = {}".format(np.sqrt(5)))
+    print("abs(y) = {}".format(np.sqrt([10, 20])))
+    print("--結果--", "--result--")
+    print("-x = {}".format(-x))
+    print("-y = {}".format(-y))
+    print("+x = {}".format(+x))
+    print("+y = {}".format(+y))
+    print("abs(x) = {}".format(abs(x)))
+    print("abs(y) = {}".format(abs(y)))
+    print("-------------------------------------------\n")
+
+    print("__complex__, __int__, __float__のテスト", "test __complex__, __int__,  __float__", "\n")
+    print("--期待結果--", "--expected--")
+    print("complex(x) = 1 + 2j")
+    print("complex(y)", "失敗", "fail")
+    print("x.complex = 1 + 2j")
+    print("y.complex = [1 + 3j, 2 + 4j]")
+    print("int(x)", "失敗", "fail")
+    print("int(y)", "失敗", "fail")
+    print("int(v) = 1")
+    print("x.int = Dual(1, 2)")
+    print("y.int = Dual([1, 2], [3, 4])")
+    print("v.int = 1")
+    print("float(x)", "失敗", "fail")
+    print("float(y)", "失敗", "fail")
+    print("float(v) = 1.")
+    print("x.float = Dual([1., 2.])")
+    print("y.float = Dual([1., 2.], [3., 4.])")
+    print("v.float = 1.")
+    print("--結果--", "--result--")
+    print("complex(x) = {}".format(complex(x)))
+    try:
+        print("complex(y) = {}".format(complex(y)), "成功", "succeed")
+    except:
+        print("complex(y)", "失敗", "fail")
+    print("x.complex = {}".format(x.complex))
+    print("y.complex = {}".format(y.complex))
+    try:
+        print("int(x) = {}".format(int(x)), "成功", "succeed")
+    except:
+        print("int(x)", "失敗", "fail")
+    try:
+        print("int(y) = {}".format(int(y)), "成功", "succeed")
+    except:
+        print("int(y)", "失敗", "fail")
+    print("int(v) = {}".format(int(v)))
+    print("x.int = {}".format(x.int))
+    print("y.int = {}".format(y.int))
+    print("v.int = {}".format(v.int))
+    try:
+        print("float(x) = {}".format(float(x)), "成功", "succeed")
+    except:
+        print("float(x)", "失敗", "fail")
+    try:
+        print("float(y) = {}".format(float(y)), "成功", "succeed")
+    except:
+        print("float(y)", "失敗", "fail")
+    print("float(v) = {}".format(float(v)))
+    print("x.float = {}".format(x.float))
+    print("y.float = {}".format(y.float))
+    print("v.float = {}".format(v.float))
     print("-------------------------------------------\n")
 
 
