@@ -53,7 +53,7 @@ as a starting point and made
 compatible with Numpy.
 
 ## Demo
-    import dual as d
+    from dual import Dual
     x = Dual(1, 2)
     y = Dual([1, 2], [3, 4])
     z = Dual(2, 1)
