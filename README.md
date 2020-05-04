@@ -12,13 +12,8 @@ To use dual-number.
 ## VS
 <https://github.com/tmurakami1234/my_python_module/tree/master/dual>
 を出発点の参考とさせていただき、
-[](https://docs.python.org/ja/3/reference/datamodel.html "Pythonの特殊メソッド")
+[Pythonの特殊メソッド](https://docs.python.org/ja/3/reference/datamodel.html)
 をNumpyに対応させました。
-
-
-* Free software: MIT license
-* Documentation: https://dual.readthedocs.io.
-
 
 Features
 --------
