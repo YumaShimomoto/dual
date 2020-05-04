@@ -7,6 +7,7 @@ To use dual-number.
 二重数については[Wikipedia](https://ja.wikipedia.org/wiki/二重数)などを参考にしています。  
 二重数とは二乗するとゼロとなる新たな元
 <img src="https://latex.codecogs.com/gif.latex?\inline&space;ε^2" />
+<img src="https://latex.codecogs.com/gif.latex?\int_a^bf(x)dx" />
 を導入した、複素数と似た概念である。
 
 ## VS
