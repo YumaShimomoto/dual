@@ -2,7 +2,7 @@
 二重数を扱うためのクラス。  
 To use dual-number.
 
-## Disctiption
+## Desctiption
 深層学習について勉強している際、TensorFlowに実装されているという自動微分およびその実装に使われる二重数について知り、これを扱うためのクラスを作成してみました。  
 二重数については
 [Wikipedia](https://ja.wikipedia.org/wiki/二重数)
