@@ -1,7 +1,13 @@
+#
+# @Author: Yuma Shimomoto (2020)
+# @email: yuma_1215@docomo.ne.jp
+#
+
 import numpy as np
 
 
-from al import *
+from dual import *
+
 
 ##########
 # 数学定数 mathematical constants
@@ -24,6 +30,10 @@ def square(obj):
 def sqrt(obj):
     obj = to_dual(obj)
     return obj ** 0.5
+
+def cbrt(obj):
+    obj = to_dual(obj)
+    return obj ** (1 / 3)
 
 def exp(obj):
     obj = to_dual(obj)
@@ -150,6 +160,31 @@ def sinc(obj, norm=False):
 
 
 ##########
+# 数学演算関数 mathematical operation function
+#######
+def add(obj1, obj2):
+    return obj1 + obj2
+
+def subtract(obj1, obj2):
+    return obj1 - obj2
+
+def multiply(obj1, obj2):
+    return obj1 * obj2
+
+def divide(obj1, obj2):
+    return obj1 / obj2
+
+def dot(obj1, obj2):
+    return obj1 @ obj2
+
+def matmul(obj1, obj2):
+    return obj1 @ obj2
+
+def reciprocal(obj):
+    return 1 / obj
+
+
+##########
 # 数学に関連するユーティリティ math related utilities
 #######
 def deg2rad(obj):
@@ -269,3 +304,23 @@ def min(obj, axis=None, out=None, keepdims=False):
 def min_imag(obj, axis=None, out=None, keepdims=False):
     obj = to_dual(obj)
     return np.min(obj.im, axis=axis, out=out, keepdims=keepdims)
+
+def nanmax(obj, axis=None, out=None, keepdims=False):
+    obj = to_dual(obj)
+    indices = not np.isnan(obj.re)
+    return max(obj[indices], axis=axis, out=out, keepdims=keepdims)
+
+def nanmax_imag(obj, axis=None, out=None, keepdims=False):
+    obj = to_dual(obj)
+    indices = not np.isnan(obj.im)
+    return max_imag(obj[indices], axis=axis, out=out, keepdims=keepdims)
+
+def nanmin(obj, axis=None, out=None, keepdims=False):
+    obj = to_dual(obj)
+    indices = not np.isnan(obj.re)
+    return min(obj[indices], axis=axis, out=out, keepdims=keepdims)
+
+def nanmin_imag(obj, axis=None, out=None, keepdims=False):
+    obj = to_dual(obj)
+    indices = not np.isnan(obj.im)
+    return min_imag(obj[indices], axis=axis, out=out, keepdims=keepdims)
