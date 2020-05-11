@@ -61,18 +61,22 @@ class Dual():
         self.__dict__["re"] = _re
         self.__dict__["im"] = _im
         self.__dict__["_i"] = 0
+        self.__dict__["_re"] = _re.reshape(-1)
+        self.__dict__["_im"] = _im.reshape(-1)
 
     def __repr__(self):
-        if np.ndim(self.re) <= 1:
-            return "Dual({}, {})".format(self.re, self.im)
-        else:
-            return "Dual(\n{}, \n{})".format(self.re, self.im)
+        return str(self.complex).replace("j", "e")
+#        if self.ndim <= 1:
+#            return "{} + e{}".format(self.re, self.im)
+#        else:
+#            return "{}\n+ e\n{}".format(self.re, self.im)
 
     def __str__(self):
-        if np.ndim(self.re) <= 1:
-            return "Dual({}, {})".format(self.re, self.im)
-        else:
-            return "Dual(\n{}, \n{})".format(self.re, self.im)
+        return str(self.complex).replace("j", "e")
+#        if self.ndim <= 1:
+#            return "{} + e{}".format(self.re, self.im)
+#        else:
+#            return "{}\n+ e\n{}".format(self.re, self.im)
 
     def __lt__(self, other):
         """
@@ -169,21 +173,23 @@ class Dual():
 
     def __iter__(self):
         self._i = 0
-        while self._i < len(self):
-            yield Dual(self.re[self._i], self.im[self._i])
-            self._i += 1
+        return self
+#        while self._i < len(self):
+#            yield Dual(self.re[self._i], self.im[self._i])
+#            self._i += 1
 
     def __next__(self):
-        if self._i > len(self):
+        if self._i >= len(self._re):
             raise StopIteration
         self._i += 1
-        return Dual(self.re[self._i - 1], self.im[self._i - 1])
+        return Dual(self._re[self._i - 1], self._im[self._i - 1])
 
     def __reversed__(self):
-        self._i = self.__len__() - 1
-        while self._i >= 0:
-            yield Dual(self.re[self._i], self.im[self._i])
-            self._i -= 1
+        self._i = 0
+        return Dual(self._re[::-1], self._im[::-1])
+#        while self._i >= 0:
+#            yield Dual(self.re[self._i], self.im[self._i])
+#            self._i -= 1
 
     def __contains__(self, item):
         return np.any(self == item)
@@ -503,9 +509,9 @@ class Dual():
     @property
     def complex(self):
         try:
-            return np.array([complex(self.re[i], self.im[i]) for i in range(len(self))])
+            return np.array([complex(x.re, x.im) for x in self]).reshape(self.shape)
         except:
-            return np.array([complex(self)])
+            return complex(self.re, self.im)
 
     @property
     def int(self):
@@ -532,6 +538,10 @@ class Dual():
     @property
     def ndim(self):
         return np.ndim(self.re)
+
+    @property
+    def size(self):
+        return np.size(self.re)
 
     @property
     def shape(self):

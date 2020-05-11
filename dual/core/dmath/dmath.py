@@ -6,7 +6,7 @@
 import numpy as np
 
 
-from dual import *
+from ..dual import *
 
 
 ##########
@@ -87,7 +87,7 @@ def cosh(obj):
     return 0.5 * (exp(obj) + exp(-obj))
 
 def tanh(obj):
-    return sinh(obj) / cosh(obj))
+    return sinh(obj) / cosh(obj)
 
 def arcsin(obj):
     obj = to_dual(obj)
@@ -211,10 +211,6 @@ def round(obj, decimals=0):
     obj = to_dual(obj)
     return Dual(np.round(obj.re, decimals=decimals), np.round(obj.im, decimals=decimals))
 
-def around(obj, decimasls=0):
-    obj = to_dual(obj)
-    return Dual(np.around(obj.re, decimals=decimals), np.around(obj.im, decimals=decimals))
-
 def rint(obj):
     obj = to_dual(obj)
     return Dual(np.rint(obj.re), np.rint(obj.im), dtype=np.int)
@@ -235,7 +231,7 @@ def conj(obj):
     obj = to_dual(obj)
     return Dual(obj.re, -obj.im)
 
-def abs(obj):
+def absolute(obj):
     return abs(obj)
 
 def _compare(obj1, obj2, func):
@@ -246,15 +242,15 @@ def _compare(obj1, obj2, func):
     result.re = func(obj1.re, obj2.re)
     indices = obj1.re == result.re
     result.im[indices] = obj1.im[indices]
-    result.im[not indices] == obj2.im[not indices]
+    result.im[~indices] = obj2.im[~indices]
 
     eq_indices = obj1.re == obj2.re
     im_elements = func(obj1.im, obj2.im)
     im_indices = im_elements == obj1.im
     result.re[im_indices * eq_indices] = obj1.re[im_indices * eq_indices]
-    result.re[(not im_indices) * eq_indices] = obj2.re[(not im_indices) * eq_indices]
     result.im[im_indices * eq_indices] = obj1.im[im_indices * eq_indices]
-    result.im[(not im_indices) * eq_indices] = obj2.im[(not im_indices) * eq_indices]
+    result.re[~im_indices * eq_indices] = obj2.re[~im_indices * eq_indices]
+    result.im[~im_indices * eq_indices] = obj2.im[~im_indices * eq_indices]
     return result
 
 def fmax(obj1, obj2):
@@ -265,15 +261,15 @@ def fmin(obj1, obj2):
 
 def isnan(obj):
     obj = to_dual(obj)
-    return np.isnan(obj.re) or np.isnan(obj.im)
+    return np.isnan(obj.re) | np.isnan(obj.im)
 
 def isfinite(obj):
     obj = to_dual(obj)
-    return np.isfinite(obj.re) or np.isfinite(obj.im)
+    return np.isfinite(obj.re) | np.isfinite(obj.im)
 
 def isinf(obj):
     obj = to_dual(obj)
-    return np.isinf(obj.re) or np.isinf(obj.im)
+    return np.isinf(obj.re) | np.isinf(obj.im)
 
 def maximum(obj1, obj2):
     return _compare(obj1, obj2, np.maximum)
@@ -291,7 +287,7 @@ def sign_imag(obj):
 
 def max(obj, axis=None, out=None, keepdims=False):
     obj = to_dual(obj)
-    return np.max(obj.re, axis=axis, iut=out, keepdims=keepdims)
+    return np.max(obj.re, axis=axis, out=out, keepdims=keepdims)
 
 def max_imag(obj, axis=None, out=None, keepdims=False):
     obj = to_dual(obj)
@@ -307,20 +303,20 @@ def min_imag(obj, axis=None, out=None, keepdims=False):
 
 def nanmax(obj, axis=None, out=None, keepdims=False):
     obj = to_dual(obj)
-    indices = not np.isnan(obj.re)
+    indices = ~np.isnan(obj.re)
     return max(obj[indices], axis=axis, out=out, keepdims=keepdims)
 
 def nanmax_imag(obj, axis=None, out=None, keepdims=False):
     obj = to_dual(obj)
-    indices = not np.isnan(obj.im)
+    indices = ~np.isnan(obj.im)
     return max_imag(obj[indices], axis=axis, out=out, keepdims=keepdims)
 
 def nanmin(obj, axis=None, out=None, keepdims=False):
     obj = to_dual(obj)
-    indices = not np.isnan(obj.re)
+    indices = ~np.isnan(obj.re)
     return min(obj[indices], axis=axis, out=out, keepdims=keepdims)
 
 def nanmin_imag(obj, axis=None, out=None, keepdims=False):
     obj = to_dual(obj)
-    indices = not np.isnan(obj.im)
+    indices = ~np.isnan(obj.im)
     return min_imag(obj[indices], axis=axis, out=out, keepdims=keepdims)

@@ -1,7 +1,7 @@
 """Top-level package for dual."""
 
 #from . import core
-from .core import *
+from .dual import *
 
 
 __author__ = """Yuma Shimomoto"""
