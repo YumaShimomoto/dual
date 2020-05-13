@@ -506,6 +506,10 @@ class Dual():
     def broadcast_to(self, shape):
         return Dual(np.broadcast_to(self.re, shape), np.broadcast_to(self.im, shape))
 
+    def astype(self, dtype, order='K', casting='unsafe', subok=True, copy=True):
+        return Dual(self.re.astype(dtype, order=order, casting=casting, subok=subok, copy=copy), \
+                    self.im.astype(dtype, order=order, casting=casting, subok=subok, copy=copy))
+
     @property
     def complex(self):
         try:
@@ -558,9 +562,3 @@ def to_dual(obj):
         return Dual(*obj)
     else:
         return Dual(obj)
-
-def broadcast_to(obj, shape):
-    if is_dual(obj):
-        return Dual(np.broadcast_to(obj.re, shape), np.broadcast_to(obj.im, shape))
-    else:
-        return np.broadcast_to(obj, shape)

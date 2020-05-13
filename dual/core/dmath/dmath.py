@@ -259,6 +259,12 @@ def fmax(obj1, obj2):
 def fmin(obj1, obj2):
     return _compare(obj1, obj2, np.fmin)
 
+def maximum(obj1, obj2):
+    return _compare(obj1, obj2, np.maximum)
+
+def minimum(obj1, obj2):
+    return _compare(obj1, obj2, np.minimum)
+
 def isnan(obj):
     obj = to_dual(obj)
     return np.isnan(obj.re) | np.isnan(obj.im)
@@ -271,12 +277,6 @@ def isinf(obj):
     obj = to_dual(obj)
     return np.isinf(obj.re) | np.isinf(obj.im)
 
-def maximum(obj1, obj2):
-    return _compare(obj1, obj2, np.maximum)
-
-def minimum(obj1, obj2):
-    return _compare(obj1, obj2, np.minimum)
-
 def sign(obj):
     obj = to_dual(obj)
     return np.sign(obj.re)
@@ -285,6 +285,10 @@ def sign_imag(obj):
     obj = to_dual(obj)
     return np.sign(obj.im)
 
+
+##########
+# 統計関数 statistical functions
+#######
 def max(obj, axis=None, out=None, keepdims=False):
     obj = to_dual(obj)
     return np.max(obj.re, axis=axis, out=out, keepdims=keepdims)
@@ -320,3 +324,88 @@ def nanmin_imag(obj, axis=None, out=None, keepdims=False):
     obj = to_dual(obj)
     indices = ~np.isnan(obj.im)
     return min_imag(obj[indices], axis=axis, out=out, keepdims=keepdims)
+
+def mean(obj, axis=None, dtype=None, out=None, keepdims=np._NoValue):
+    obj = to_dual(obj)
+    return np.mean(obj.re, axis=axis, dtype=dtype, out=out, keepdims=keepdims)
+
+def mean_imag(obj, axis=None, dtype=None, out=None, keepdims=np._NoValue):
+    obj = to_dual(obj)
+    return np.mean(obj.im, axis=axis, dtype=dtype, out=out, keepdims=keepdims)
+
+def dmean(obj, axis=None, dtype=None, out=None, keepdims=np._NoValue):
+    obj = to_dual(obj)
+    return Dual(mean(obj), mean_imag(obj))
+
+def sum(obj, axis=None, dtype=None, out=None, keepdims=np._NoValue, \
+        initial=np._NoValue, where=np._NoValue):
+    obj = to_dual(obj)
+    return np.sum(obj.re, axis=axis, dtype=dtype, out=out, keepdims=keepdims, \
+                  initial=initial, where=where)
+
+def sum_imag(obj, axis=None, dtype=None, out=None, keepdims=np._NoValue, \
+             initial=np._NoValue, where=no._NoValue):
+    obj = to_dual(obj)
+    return np.sum(obj.im, axis=axis, dtype=dtype, out=out, keepdims=keepdims, \
+                  initial=initial, where=where)
+
+def dsum(obj, axis=None, dtype=None, out=None, keepdims=np._NoValue, \
+         initial=np._NoValue, where=np._NoValue)
+    obj = to_dual(obj)
+    return Dual(sum(obj), sum_imag(obj))
+
+def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
+    obj = to_dual(obj)
+    return np.median(obj.re, axis=axis, out=out, overwrite_input=overwrite_input, keepdims=keepdims)
+
+def median_imag(a, axis=None, out=None, overwrite_input=False, keepdims=False):
+    obj = to_dual(obj)
+    return np.median(obj.im, axis=axis, out=out, overwrite_input=overwrite_input, keepdims=keepdims)
+
+def std(obj, axis=None, dtype=None, out=None, ddof=0, keepdims=np._NoValue):
+    obj = to_dual(obj)
+    return np.std(obj.re, axis=axis, dtype=dtype, out=out, ddof=ddof, keepdims=keepdims)
+
+def std_imag(obj, axis=None, dtype=None, out=None, ddof=0, keepdims=np._NoValue):
+    obj = to_dual(obj)
+    return np.std(obj.im, axis=axis, dtype=dtype, out=out, ddof=ddof, keepdims=keepdims)
+
+def var(obj, axis=None, dtype=None, out=None, ddof=0, keepdims=np._NoValue):
+    obj = to_dual(obj)
+    return np.var(obj.re, axis=axis, dtype=dtype, out=out, ddof=ddof, keepdims=keepdims)
+
+def var_imag(obj, axis=None, dtype=None, out=None, ddof=0, keepdims=np._NoValue):
+    obj = to_dual(obj)
+    return np.var(obj.im, axis=axis, dtype=dtype, out=out, ddof=ddof, keepdims=keepdims)
+
+def argmax(obj, axis=None, out=None):
+    obj = to_dual(obj)
+    return np.argmax(obj.re, axis=axis, out=out)
+
+def argmax_imag(obj, axis=None, out=None):
+    obj = to_dual(obj)
+    return np.argmax(obj.im, axis=axis, out=out)
+
+def nanargmax(obj, axis=None):
+    obj = to_dual(obj)
+    return np.nanargmax(obj.re, axis=axis)
+
+def nanargmax_imag(obj, axis=None):
+    obj = to_dual(obj)
+    return np.nanargmax(obj.im, axis=axis)
+
+def nanargmin(obj, axis=None):
+    obj = to_dual(obj)
+    return np.nanargmin(obj.re, axis=axis)
+
+def nanargmin_imag(obj, axis=None):
+    obj = to_dual(obj)
+    return np.nanargmin(obj.im, axis=axis)
+
+def argmin(obj, axis=None, out=None):
+    obj = to_dual(obj)
+    return np.argmax(obj.re, axis=axis, out=out)
+
+def argmin_imag(obj, axis=None, out=None):
+    obj = to_dual(obj)
+    return np.argmin(obj.im, axis=axis, out=out)
