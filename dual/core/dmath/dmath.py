@@ -1,6 +1,6 @@
 #
-# @Author: Yuma Shimomoto (2020)
-# @email: yuma_1215@docomo.ne.jp
+# @Author: kuroitu (2020)
+# @email: Skuroitu@gmail.com
 #
 
 import numpy as np

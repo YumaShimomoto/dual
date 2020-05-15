@@ -47,8 +47,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'dual'
-copyright = "2020, Yuma Shimomoto"
-author = "Yuma Shimomoto"
+copyright = "2020, kuroitu"
+author = "kuroitu"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -129,7 +129,7 @@ latex_elements = {
 latex_documents = [
     (master_doc, 'dual.tex',
      'dual Documentation',
-     'Yuma Shimomoto', 'manual'),
+     'kuroitu', 'manual'),
 ]
 
 

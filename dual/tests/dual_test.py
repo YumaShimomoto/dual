@@ -1,6 +1,6 @@
 #
-# @Author: Yuma Shimomoto (2020)
-# @email: yuma_1215@docomo.ne.jp
+# @Author: kuroitu (2020)
+# @email: Skuroitu@gmail.com
 #
 """
 参考：https://github.com/tmurakami1234/my_python_module/blob/master/dual/dual.py

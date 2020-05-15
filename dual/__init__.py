@@ -4,6 +4,6 @@
 from .core import *
 
 
-__author__ = """Yuma Shimomoto"""
-__email__ = 'yuma_1215@docomo.ne.jpl'
+__author__ = """kuroitu"""
+__email__ = 'Skuroitu@gmail.com'
 __version__ = '0.0.0'

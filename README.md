@@ -64,14 +64,14 @@ compatible with Numpy.
     # The value 11 obtained by substituting z=2 into the derivative 3z^2-1 and multiplying by 1 appears in the imaginary dual part.
 などなど。
 詳しくは
-[テストコード](https://github.com/YumaShimomoto/dual/blob/master/dual/dual_test.py)
+[テストコード](https://github.com/kuroitu/dual/blob/master/dual/dual_test.py)
 を参考にしてください。
   
   
 """ code lines """  
 and so on.
 For details, refer to the
-[test code](https://github.com/YumaShimomoto/dual/blob/master/dual/dual_test.py)
+[test code](https://github.com/kuroitu/dual/blob/master/dual/dual_test.py)
 .
 
 ## Feature

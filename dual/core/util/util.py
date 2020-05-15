@@ -1,3 +1,8 @@
+#
+# @Author: kuroitu (2020)
+# @email: Skuroitu@gmail.com
+#
+
 import numpy as np
 
 

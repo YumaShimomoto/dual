@@ -21,8 +21,8 @@ setup_requirements = [ ]
 test_requirements = [ ]
 
 setup(
-    author="Yuma Shimomoto",
-    author_email='yuma_1215@docomo.ne.jp',
+    author="kuroitu",
+    author_email='Skuroitu@gmail.com',
     python_requires='>=3.5',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
@@ -51,7 +51,7 @@ setup(
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/YumaShimomoto/dual',
+    url='https://github.com/kuroitu/dual',
     version='0.0.0',
     zip_safe=False,
 )

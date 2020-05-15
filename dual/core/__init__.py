@@ -6,5 +6,5 @@ from .dual import *
 from .dmath import *
 
 
-__author__ = """Yuma Shimomoto"""
-__email__ = 'yuma_1215@docomo.ne.jp'
+__author__ = """kuroitu"""
+__email__ = 'Skuroitu@gmail.com'

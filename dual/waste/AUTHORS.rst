@@ -5,7 +5,7 @@ Credits
 Development Lead
 ----------------
 
-* Yuma Shimomoto <yuma_1215@docomo.ne.jp>
+* kuroitu <Skuroitu@gmail.com>
 
 Contributors
 ------------
