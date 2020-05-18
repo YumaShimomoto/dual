@@ -1,6 +1,6 @@
 #
 # @Author: kuroitu (2020)
-# @email: Skuroitu@gmail.com
+# @email: skuroitu@gmail.com
 #
 """
 参考：https://github.com/tmurakami1234/my_python_module/blob/master/dual/dual.py
@@ -64,19 +64,14 @@ class Dual():
         self.__dict__["_re"] = _re.reshape(-1)
         self.__dict__["_im"] = _im.reshape(-1)
 
+
     def __repr__(self):
         return str(self.complex).replace("j", "e")
-#        if self.ndim <= 1:
-#            return "{} + e{}".format(self.re, self.im)
-#        else:
-#            return "{}\n+ e\n{}".format(self.re, self.im)
+
 
     def __str__(self):
         return str(self.complex).replace("j", "e")
-#        if self.ndim <= 1:
-#            return "{} + e{}".format(self.re, self.im)
-#        else:
-#            return "{}\n+ e\n{}".format(self.re, self.im)
+
 
     def __lt__(self, other):
         """
@@ -88,6 +83,7 @@ class Dual():
         other = to_dual(other)
         return (self.re < other.re) | ((self.re == other.re) & (self.im < other.im))
 
+
 #    def __lt__(self, other):
 #        """
 #        ノルム順で比較しています。
@@ -96,21 +92,27 @@ class Dual():
 #        other = to_dual(other)
 #        return self.__abs__() < other.__abs__()
 
+
     def __le__(self, other):
         return (self < other) | (self == other)
+
 
     def __eq__(self, other):
         other = to_dual(other)
         return (self.re == other.re) & (self.im == other.im)
 
+
     def __ne__(self, other):
         return ~ (self == other)
+
 
     def __gt__(self, other):
         return ~ (self <= other)
 
+
     def __ge__(self, other):
         return ~ (self < other)
+
 
     def __hash__(self):
         if len(self) == 1:
@@ -124,8 +126,10 @@ class Dual():
             else:
                 return int(np.sum([hash((self.re[i], self.im[i])) for i in range(len(self))]))
 
+
     def __bool__(self):
         return bool(np.any(self.__nonzero__()))
+
 
     def __setattr__(self, name, value):
         if name not in self.__dict__:
@@ -133,11 +137,13 @@ class Dual():
         else:
             self.__dict__[name] = value
 
+
     def __len__(self):
         try:
             return len(self.re)
         except:
             return 1
+
 
     def __getitem__(self, key):
         try:
@@ -147,6 +153,7 @@ class Dual():
                 return Dual(self.re, self.im)
             else:
                 raise KeyError
+
 
     def __setitem__(self, key, value):
         value = to_dual(value)
@@ -160,6 +167,7 @@ class Dual():
             else:
                 raise KeyError
 
+
     def __delitem__(self, key):
         try:
             self.re[key] = 0
@@ -171,12 +179,11 @@ class Dual():
             else:
                 raise KeyError
 
+
     def __iter__(self):
         self._i = 0
         return self
-#        while self._i < len(self):
-#            yield Dual(self.re[self._i], self.im[self._i])
-#            self._i += 1
+
 
     def __next__(self):
         if self._i >= len(self._re):
@@ -184,27 +191,30 @@ class Dual():
         self._i += 1
         return Dual(self._re[self._i - 1], self._im[self._i - 1])
 
+
     def __reversed__(self):
         self._i = 0
         return Dual(self._re[::-1], self._im[::-1])
-#        while self._i >= 0:
-#            yield Dual(self.re[self._i], self.im[self._i])
-#            self._i -= 1
+
 
     def __contains__(self, item):
         return np.any(self == item)
+
 
     def __add__(self, other):
         other = to_dual(other)
         return Dual(self.re + other.re, self.im + other.im)
 
+
     def __sub__(self, other):
         other = to_dual(other)
         return Dual(self.re - other.re, self.im - other.im)
 
+
     def __mul__(self, other):
         other = to_dual(other)
         return Dual(self.re * other.re, self.im * other.re + self.re * other.im)
+
 
     def __matmul__(self, other):
         """
@@ -282,6 +292,7 @@ class Dual():
             else:
                 return cal_buf
 
+
     def __truediv__(self, other):
         other = to_dual(other)
         d = other.re * other.re
@@ -289,14 +300,18 @@ class Dual():
             raise ZeroDivisionError("math domain error")
         return Dual(self.re * other.re / d, (self.im * other.re - self.re * other.im) / d)
 
+
     def __floordiv__(self, other):
         raise TypeError("can't take floor of dual number.")
+
 
     def __mod__(self, other):
         raise TypeError("can't take mod of dual number.")
 
+
     def __divmod__(self, other):
         raise TypeError("can't take floor and mod of dual number.")
+
 
     def __pow__(self, other):
         if is_dual(other):
@@ -358,12 +373,14 @@ class Dual():
         # If the type of 'other' isn't 'Dual', return Numpy calculations.
         return Dual(np.power(self.re, other), other * np.power(self.re, other - 1) * self.im)
 
+
     def __lshift__(self, other):
         """
         シフト演算はサポートされません。
         Be unsupported shift operator.
         """
         raise NotImplemented
+
 
     def __rshift__(self, other):
         """
@@ -372,12 +389,14 @@ class Dual():
         """
         raise NotImplemented
 
+
     def __and__(self, other):
         """
         論理演算はサポートされません。
         Be unsupported logical operator.
         """
         raise NotImplemented
+
 
     def __xor__(self, other):
         """
@@ -386,6 +405,7 @@ class Dual():
         """
         raise NotImplemented
 
+
     def __or__(self, other):
         """
         論理演算はサポートされません。
@@ -393,25 +413,32 @@ class Dual():
         """
         raise NotImplemented
 
+
     __radd__ = __add__
+
 
     def __rsub__(self, other):
         other = to_dual(other)
         return other - self
 
+
     __rmul__ = __mul__
+
 
     def __rtruediv__(self, other):
         other = to_dual(other)
         return other / self
 
+
     __rfloordiv__ = __floordiv__
     __rmod__ = __mod__
     __rdivmod__ = __divmod__
 
+
     def __rpow__(self, other):
         other = to_dual(other)
         return other ** self
+
 
     __rlshift__ = __lshift__
     __rrshift__ = __rshift__
@@ -419,32 +446,40 @@ class Dual():
     __rxor__ = __xor__
     __ror__ = __or__
 
+
     def __iadd__(self, other):
         self.assign(self + other)
         return self
+
 
     def __isub__(self, other):
         self.assign(self - other)
         return self
 
+
     def __imul__(self, other):
         self.assign(self * other)
         return self
+
 
     def __imatmul__(self, other):
         self.assign(self @ other)
         return self
 
+
     def __itruediv__(self, other):
         self.assign(self / other)
         return self
 
+
     __ifloordiv__ = __floordiv__
     __imod__ = __mod__
+
 
     def __ipow__(self, other):
         self.assign(self ** other)
         return self
+
 
     __ilshift__ = __lshift__
     __irshift__ = __rshift__
@@ -452,14 +487,18 @@ class Dual():
     __ixor__ = __xor__
     __ior__ = __or__
 
+
     def __neg__(self):
         return Dual(- self.re, - self.im)
+
 
     def __pos__(self):
         return self
 
+
     def __abs__(self):
         return np.hypot(self.re, self.im)
+
 
     def __invert__(self):
         """
@@ -468,47 +507,87 @@ class Dual():
         """
         raise NotImplemented
 
+
     def __complex__(self):
         if self.ndim != 0:
             raise ValueError("Can't convert Dual with vector or matrix to complex.")
         return complex(self.re, self.im)
+
 
     def __int__(self):
         if np.any(self.im):
             raise ValueError("Can't convert Dual with nonzero im to int.")
         return int(self.re)
 
+
     def __float__(self):
         if np.any(self.im):
             raise ValueError("Can't convert Dual with nonzero im to float.")
         return float(self.re)
 
+
     def __round__(self, ndigits=0):
         return Dual(np.round(self.re, decimal=ndigits), np.round(self.im, decimal=ndigits))
+
 
     def __trunc__(self):
         return Dual(np.trunc(self.re), np.trunc(self.im))
 
+
     def __floor__(self):
         return Dual(np.floor(self.re), np.floor(self.im))
+
 
     def __ceil__(self):
         return Dual(np.ceil(self.re), np.ceil(self.im))
 
+
     def __nonzero__(self):
         return ~ ((self.re == 0) & (self.im == 0))
+
 
     def assign(self, other):
         other = to_dual(other)
         self.re = other.re
         self.im = other.im
 
+
     def broadcast_to(self, shape):
         return Dual(np.broadcast_to(self.re, shape), np.broadcast_to(self.im, shape))
+
+
+    def reshape(self, shape, order="C"):
+        return Dual(np.reshape(self.re, shape, order=order), np.reshape(self.im, shape, order=order)
+
+
+    def squeeze(self, axis=None):
+        return Dual(np.squeeze(self.re, axis=axis), np.squeeze(self.im, axis=axis))
+
+
+    def ravel(self, order="C"):
+        return Dual(np.ravel(self.re, order=order), np.ravel(self.im, order=order))
+
+
+    def flatten(self, order="C"):
+        try:
+            return Dual(self.re.flatten(order=order), self.im.flatten(order=order))
+        except:
+            return self
+
+
+    def transpose(self, axes=None):
+        return Dual(np.transpose(self.re, axes=axes), np.transpose(self.im, axes=axes))
+
+
+    def diagonal(self, offset=0, axis1=0, axis2=1):
+        return Dual(self.re.diagonal(offset=offset, axis1=axis1, axis2=axis2), \
+                    self.im.diagonal(offset=offset, axis1=axis1, axis2=axis2))
+
 
     def astype(self, dtype, order='K', casting='unsafe', subok=True, copy=True):
         return Dual(self.re.astype(dtype, order=order, casting=casting, subok=subok, copy=copy), \
                     self.im.astype(dtype, order=order, casting=casting, subok=subok, copy=copy))
+
 
     @property
     def complex(self):
@@ -517,17 +596,20 @@ class Dual():
         except:
             return complex(self.re, self.im)
 
+
     @property
     def int(self):
         if np.any(self.im):
             return Dual(self.re, self.im, dtype=np.int)
         return np.array(self.re, dtype=np.int)
 
+
     @property
     def float(self):
         if np.any(self.im):
             return Dual(self.re, self.im, dtype=np.float)
         return np.array(self.re, dtype=np.float)
+
 
     @property
     def T(self):
@@ -539,13 +621,16 @@ class Dual():
         except:
             return Dual(self.re, self.im)
 
+
     @property
     def ndim(self):
         return np.ndim(self.re)
 
+
     @property
     def size(self):
         return np.size(self.re)
+
 
     @property
     def shape(self):
@@ -554,6 +639,7 @@ class Dual():
 
 def is_dual(obj):
     return hasattr(obj, "re") and hasattr(obj, "im")
+
 
 def to_dual(obj):
     if is_dual(obj):
