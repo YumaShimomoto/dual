@@ -1,6 +1,8 @@
 # 二重数 Dual number
 二重数を扱うためのクラス。  
-To use dual-number.
+To use dual-number.  
+
+![testplot](https://github.com/kuroitu/images/blob/master/trigonometric.png)
 
 ## Desctiption
 深層学習について勉強している際、TensorFlowに実装されているという自動微分およびその実装に使われる二重数について知り、これを扱うためのクラスを作成してみました。  
