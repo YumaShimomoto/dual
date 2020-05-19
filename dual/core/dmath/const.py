@@ -3,7 +3,7 @@
 # @email: skuroitu@gmail.com
 #
 
-from numpy import np
+import numpy as np
 
 
 ##########

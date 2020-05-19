@@ -6,4 +6,4 @@ from .dmath import *
 
 
 __author__ = """kuroitu"""
-__email__ = 'Skuroitu@gmail.com'
+__email__ = 'skuroitu@gmail.com'

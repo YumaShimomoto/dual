@@ -1,3 +1,8 @@
+#
+# @Author: kuroitu (2020)
+# @email: skuroitu@gmail.com
+#
+
 import os
 import numpy as np
 
@@ -69,9 +74,7 @@ def arange(stop, start=None, step=None, stop_im=None, start_im=None, step_im=Non
         start_im = start
     if step_im is None:
         step_im = step
-    return Dual(np.arange(stop, start=start, step=step), \
-                np.arange(stop_im, start=start_im, step=step_im), \
-                dtype=dtype)
+    return Dual(np.arange(start, stop, step), np.arange(start_im, stop_im, step_im), dtype=dtype)
 
 
 def linspace(start, stop, num=50, start_im=None, stop_im=None, num_im=None, \
@@ -386,21 +389,21 @@ def roll(obj, shift, axis=None):
 
 def rollaxis(obj, axis, start=0):
     obj = to_dual(obj)
-    return Dual(np.rollaxis(obj.re, axis, start=start), np.rollaxis(obj.im, axis, start=start)
+    return Dual(np.rollaxis(obj.re, axis, start=start), np.rollaxis(obj.im, axis, start=start))
 
 
 ##########
 # ファイル入出力 input/output file
 #######
-def save(file, obj, allow_pickle=True, fix_imports=True):
+def save(fname, obj, allow_pickle=True, fix_imports=True):
     obj = to_dual(obj)
-    np.save(file.replace(".npy", "_re.npy"), obj.re, \
+    np.save(fname.replace(".npy", "_re.npy"), obj.re, \
             allow_pickle=allow_pickle, fix_imports=fix_imports)
-    np.save(file.replace(".npy", "_im.npy"), obj.im, \
+    np.save(fname.replace(".npy", "_im.npy"), obj.im, \
             allow_pickle=allow_pickle, fix_imports=fix_imports)
 
 
-def savez(file, *args, **kwds):
+def savez(fname, *args, **kwds):
     _kwds = []
     if len(args):
         i = 0
@@ -419,7 +422,7 @@ def savez(file, *args, **kwds):
             _kwds.append(str(key) + "_im")
             _kwds.append(obj.im)
 
-    np.savez(file, **dict(zip(_kwrds[0::2], _kwds[1::2])))
+    np.savez(fname, **dict(zip(_kwrds[0::2], _kwds[1::2])))
 
 
 def savetxt(fname, obj, fmt='%.18e', delimiter=' ', newline='\n', header='', footer='', \
@@ -432,16 +435,16 @@ def savetxt(fname, obj, fmt='%.18e', delimiter=' ', newline='\n', header='', foo
                header=header, footer=footer, comments=comments, encoding=encoding)
 
 
-def load(file, mmap_mode=None, allow_pickle=False, fix_imports=True, encoding='ASCII'):
+def load(fname, mmap_mode=None, allow_pickle=False, fix_imports=True, encoding='ASCII'):
     if ".npy" in file:
-        return  Dual(np.load(file.replace(".npy", "_re.npy"), mmap_mode=mmap_mode, \
+        return  Dual(np.load(fname.replace(".npy", "_re.npy"), mmap_mode=mmap_mode, \
                              allow_pickle=allow_pickle, fix_imports=fix_imports, \
                              encoding=encoding), \
-                     np.load(file.replace(".npy", "_im.npy"), mmap_mode=mmap_mode, \
+                     np.load(fname.replace(".npy", "_im.npy"), mmap_mode=mmap_mode, \
                              allow_pickle=allow_pickle, fix_imports=fix_imports, \
                              encoding=encoding))
-    elif ".npz" in file:
-        buf = np.load(file, mmap_mode=mmap_mode, \
+    elif ".npz" in fname:
+        buf = np.load(fname, mmap_mode=mmap_mode, \
                       allow_pickle=allow_pickle, fix_imports=fix_imports, \
                       encoding=encoding)
         _args = []
@@ -467,7 +470,7 @@ def load(file, mmap_mode=None, allow_pickle=False, fix_imports=True, encoding='A
 
 def loadtxt(fname, dtype=float, comments='#', delimiter=None, converters=None, skiprows=0, \
             usecols=None, unpack=False, ndmin=0, encoding='bytes', max_rows=None):
-    fname, ext = o?!?jedi=0, s.path.splitext(fname)?!? (fname, dtype=float, comments='#', delimiter=None, converters=None, skiprows=0, usecols=None, unpack=False, ndmin=0, encoding='bytes', max_rows=None) ?!?jedi?!?
+    fname, ext = os.path.splitext(fname)
     re = np.loadtxt(fname + "_re" + ext, dtype=dtype, comments=comments, delimiter=delimiter, \
                     converters=converters, skiprows=skiprows, usecols=usecols, unpack=unpack, \
                     ndim=ndim, encoding=encoding, max_rows=max_rows)

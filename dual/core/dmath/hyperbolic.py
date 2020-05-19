@@ -9,7 +9,6 @@ import numpy as np
 
 from ..dual import *
 from .const import pi
-from .exponential import sqrt
 
 
 ##########
@@ -32,12 +31,12 @@ def tanh(obj):
 
 def arcsinh(obj):
     obj = to_dual(obj)
-    return Dual(np.arcsinh(obj.re), obj.im / sqrt(1 + obj.re ** 2))
+    return Dual(np.arcsinh(obj.re), obj.im / np.sqrt(1 + obj.re ** 2))
 
 
 def arccosh(obj):
     obj = to_dual(obj)
-    return Dual(np.arccosh(obj.re), obj.im / sqrt(obj.re ** 2 - 1))
+    return Dual(np.arccosh(obj.re), obj.im / np.sqrt(obj.re ** 2 - 1))
 
 
 def arctanh(obj):
@@ -48,48 +47,53 @@ def arctanh(obj):
 def csch(obj, switch=True):
     if switch:
         obj = to_dual(obj)
-        return Dual(np.csch(obj.re), - obj.im * np.coth(obj.re) * np.csch(obj.re))
+        return Dual(1 / np.sinh(obj.re), - obj.im / (np.tanh(obj.re) * np.sinh(obj.re)))
     return 1 / sinh(obj)
 
 
-def sech(obj, switch=True)
-    if switch:
+def sech(obj, s=True):
+    if s:
         obj = to_dual(obj)
-        return Dual(np.sech(obj.re), - obj.im * np.tanh(obj.re) * np.sech(obj.re))
+        return Dual(1 / np.cosh(obj.re), - obj.im * np.tanh(obj.re) / np.cosh(obj.re))
     return 1 / cosh(obj)
 
 
-def coth(obj, switch=True):
-    if switch:
+def coth(obj, s=True):
+    if s:
         obj = to_dual(obj)
-        return Dual(np.coth(obj.re), - obj.im / np.sinh(obj.re) ** 2)
+        return Dual(1 / np.tanh(obj.re), - obj.im / np.sinh(obj.re) ** 2)
     return 1 / tanh(obj)
 
 
-def arccsch(obj, switch=True):
-    if switch:
+def arccsch(obj, s=True):
+    if s:
         obj = to_dual(obj)
-        return Dual(np.arccsch(obj.re), - obj.im / (obj.re ** 2 * sqrt(1 + 1 / obj.re ** 2)))
+        return Dual(np.arcsinh(1 / obj.re), - obj.im / (obj.re ** 2 * np.sqrt(1 + 1 / obj.re ** 2)))
     return arcsinh(1 / obj)
 
 
-def arcsech(obj, switch=True):
-    if switch:
+def arcsech(obj, s=True):
+    if s:
         obj = to_dual(obj)
-        return Dual(np.arcsech(obj.re), \
-                    - obj.im / (obj.re * (obj.re + 1) * sqrt((1 - obj.re) / (1 + obj.re))))
+        return Dual(np.arccosh(1 / obj.re), \
+                    - obj.im / (obj.re ** 2 * np.sqrt(1 / obj.re - 1) * np.sqrt(1 / obj.re + 1)))
     return arccosh(1 / obj)
 
 
-def arccoth(obj, switch=True):
-    if switch:
+def arccoth(obj, s=True):
+    if s:
         obj = to_dual(obj)
-        return Dual(np.arccoth(obj.re), obj.im / (1 - obj.re ** 2))
+        return Dual(np.arctanh(1 / obj.re), obj.im / (1 - obj.re ** 2))
     return arctanh(1 / obj)
 
 
-def sinch(obj, norm=False):
+def sinch(obj, norm=True):
     if norm:
-        return sinh(pi * obj) / (pi * obj)
+        obj = to_dual(obj)
+        return Dual(np.sinh(obj.re * pi) / (obj.re * pi), \
+                    obj.im * (obj.re * np.cosh(obj.re * pi) \
+                              - np.sinh(obj.re * pi) / pi) / obj.re ** 2)
     else:
-        return sinh(obj) / obj
+        obj = to_dual(obj)
+        return Dual(np.sinh(obj.re) / obj.re, \
+                    obj.im * (obj.re * np.cosh(obj.re) - np.sinh(obj.re)) / obj.re ** 2)

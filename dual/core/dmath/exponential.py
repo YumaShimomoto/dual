@@ -40,11 +40,9 @@ def exp(obj):
 
 def exp2(obj):
     obj = to_dual(obj)
-    return Dual(np.exp2(obj.re), obj.im * 2 * obj.re * np.log(obj.re))
+    return Dual(np.exp2(obj.re), obj.im * 2 ** obj.re * np.log(2))
 
 
-def expm1(obj, switch=True):
-    if switch:
-        obj = to_dual(obj)
-        return Dual(np.expm1(obj.re), obj.im * np.exp(obj.re))
-    return exp(obj) - 1
+def expm1(obj):
+    obj = to_dual(obj)
+    return Dual(np.expm1(obj.re), obj.im * np.exp(obj.re))

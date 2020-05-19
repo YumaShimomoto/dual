@@ -8,6 +8,7 @@
 """
 
 import numpy as np
+import math
 
 
 class Dual():
@@ -314,61 +315,71 @@ class Dual():
 
 
     def __pow__(self, other):
+        """
+        マクローリン展開すると Do McLaughlin expansion
+            exp(e x) = 1 + e x
+        以降の式変形の準備 and ready for following transration;
+            Z = z + e z' = exp(log(Z))
+            log(Z) = log(|Z| exp(e arg(Z))) = log|Z| + e arg(Z)
+            arg(Z) = arctan(z' / z)
+        以下を仮定 supposed;
+            X = x + e x'
+            Y = y + e y'
+
+        X ** Y = exp(log(X)) ** Y
+               = exp(Y log(X))
+               = exp((y + e y')(log|X| + e arg(X)))
+               = exp(y log|X| + e (y' log|X| + y arg(X)))
+               = (|X| ** y)(1 + e (y' log|X| + y arg(X)))
+               = a + e a b
+        a = |X| ** y
+        b = y' log|X| + y arg(X)
+
+        if x' = 0 and y' = 0 then
+            a = |X| ** y = |x| ** y => x ** y
+            arg(X) = 0
+            b = 0
+            X ** Y = a
+        else:
+            上記の通りa, b, arg(X)それぞれを計算する。
+            As mentioned above after calculating each buf value; a, b, arg(X).
+        """
         if is_dual(other):
             # otherがDual型の場合
             # if the type of 'other' is 'Dual',
             if self.ndim == 0 and other.ndim == 0:
                 # 点同士の演算はここで行う
                 # Do point-to-point calculations here.
+                # ndarrayじゃなければNumpyよりもmathの方が早い
+                # If it is not ndarray, 'math' is faster than 'Numpy'.
                 if other.im:
                     if self.im:
-                        raise TypeError("Dual to the Dual power.")
+                        alpha = abs(self) ** other.re
+                        argX = math.atan(self.im / self.re)
+                        beta = other.im * math.log(abs(self)) + other.re * argX
                     else:
-                        return Dual(1, other.im * np.log(self.re))
-
-                # other.imが0の場合は数値に変換して計算させる。
-                # If 'other.im' is 0, calculate it by converting it to a numerical value.
-                other = other.re
-            elif self.ndim == 0 and other.ndim != 0:
-                # selfは点でotherがベクトルか行列の場合
-                # otherを展開して点同士の計算を行い
-                # 計算結果を一つのDual型にまとめて返す。
-                # If 'self' is a point and 'other' is a vector or matrix,
-                # expand 'other' to calculate points
-                # and return the result as a single Dual value.
-                cal_buf = [self ** n for n in other]
-                return Dual(np.array([obj.re for obj in cal_buf]).reshape(other.shape), \
-                            np.array([obj.im for obj in cal_buf]).reshape(other.shape))
-            elif self.ndim != 0 and other.ndim != 0:
-                # 両方ともベクトルか行列の場合
-                # いずれか一方をブロードキャストし形状を揃え、
-                # それぞれを展開して点同士の計算を行い
-                # 計算結果を一つのDual型にまとめて返す。
-                # If both are vectors or matrices,
-                # one of them is broadcast and the shape are aligned,
-                # points are calculated
-                # and return the result as a single Dual value.
-                try:
-                    self_buf = self.broadcast_to(other.shape)
-                    other_buf = other
-                    shape = other.shape
-                except ValueError:
-                    other_buf = other.broadcast_to(self.shape)
-                    self_buf = self
-                    shape = other.shape
-                cal_buf = [x ** n for x, n in zip(self_buf, other_buf)]
-                return Dual(np.array([obj.re for obj in cal_buf]).reshape(shape), \
-                            np.array([obj.im for obj in cal_buf]).reshape(shape))
+                        alpha = self.re ** other.re
+                        beta = other.im * math.log(abs(self.re))
+                    return Dual(alpha, alpha * beta)
+                else:
+                    if self.im:
+                        alpha = abs(self) ** other.re
+                        argX = math.arctan(self.im / self.re)
+                        beta = other.re * argX
+                        return Dual(alpha, alpha * beta)
+                    else:
+                        # other.imもself.imも0の場合は数値に変換して計算させる。
+                        # If 'other.im' and 'self.im' is 0,
+                        # calculate it by converting it to a numerical value.
+                        other = other.re
             else:
-                # selfがベクトルか行列でotherが点の場合
-                # selfを展開して点同士の計算を行い
-                # 計算結果を一つのDual型にまとめて返す。
-                # If 'self' is a vector or matrix and 'other' is a point,
-                # expand 'self' to calculate points
-                # and return the result as a single Dual value.
-                cal_buf = [x ** other for x in self]
-                return Dual(np.array([obj.re for obj in cal_buf]).reshape(self.shape), \
-                            np.array([obj.im for obj in cal_buf]).reshape(self.shape))
+                # それ以外の場合は定義通り計算する。
+                # Otherwise compute as defined.
+                absX = abs(self)
+                alpha = absX ** other.re
+                argX = np.arctan(self.im / self.re)
+                beta = other.im * math.log(absX) + other.re * argX
+                return Dual(alpha, alpha * beta)
         # otherがDual型ではない場合は普通に計算して返す。
         # If the type of 'other' isn't 'Dual', return Numpy calculations.
         return Dual(np.power(self.re, other), other * np.power(self.re, other - 1) * self.im)
@@ -557,7 +568,8 @@ class Dual():
 
 
     def reshape(self, shape, order="C"):
-        return Dual(np.reshape(self.re, shape, order=order), np.reshape(self.im, shape, order=order)
+        return Dual(np.reshape(self.re, shape, order=order), \
+                    np.reshape(self.im, shape, order=order))
 
 
     def squeeze(self, axis=None):
