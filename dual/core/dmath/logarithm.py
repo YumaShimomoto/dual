@@ -37,13 +37,16 @@ def log1p(obj):
 
 def logaddexp(obj1, obj2):
     obj1, obj2 = to_dual(obj1), to_dual(obj2)
-    return Dual(np.logaddexp(obj1.re, obj2.re), \
-                (obj1.im * np.exp(obj1.re) + obj2.im * np.exp(obj2.re))/(np.exp(obj1.re) + np.exp(obj2.re)))
+    return Dual(np.logaddexp(obj1.re, obj2.re),
+                (obj1.im * np.exp(obj1.re)
+                 + obj2.im * np.exp(obj2.re))/(np.exp(obj1.re)
+                 + np.exp(obj2.re)))
     #return log(exp(obj1) + exp(obj2))
 
 
 def logaddexp2(obj1, obj2):
     obj1, obj2 = to_dual(obj1), to_dual(obj2)
-    return Dual(np.logaddexp2(obj1.re, obj2.re), \
-                (obj1.im * 2 ** obj1.re + obj2.im * 2 ** obj2.re)/(2 ** obj1.re + 2 ** obj2.re))
+    return Dual(np.logaddexp2(obj1.re, obj2.re),
+                (obj1.im * 2 ** obj1.re + obj2.im * 2 ** obj2.re)
+                 /(2 ** obj1.re + 2 ** obj2.re))
     #return log2(2 ** obj1 + 2 ** obj2)

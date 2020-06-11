@@ -40,7 +40,8 @@ def ceil(obj):
 
 def round(obj, decimals=0):
     obj = to_dual(obj)
-    return Dual(np.round(obj.re, decimals=decimals), np.round(obj.im, decimals=decimals))
+    return Dual(np.round(obj.re, decimals=decimals),
+                np.round(obj.im, decimals=decimals))
 
 
 def rint(obj):
@@ -154,4 +155,5 @@ def signbit_dual(obj):
 
 def copysign(obj1, obj2):
     obj1, obj2 = to_dual(obj1), to_dual(obj2)
-    return Dual(np.copysign(obj1.re, obj2.re), np.copysign(obj1.im, obj2.im))
+    return Dual(np.copysign(obj1.re, obj2.re),
+                np.copysign(obj1.im, obj2.im))

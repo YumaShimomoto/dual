@@ -49,12 +49,14 @@ def arctan2(obj1, obj2):
 
 def csc(obj):
     obj = to_dual(obj)
-    return Dual(1 / np.sin(obj.re), - obj.im / (np.tan(obj.re) * np.sin(obj.re)))
+    return Dual(1 / np.sin(obj.re),
+                - obj.im / (np.tan(obj.re) * np.sin(obj.re)))
 
 
 def sec(obj):
     obj = to_dual(obj)
-    return Dual(1 / np.cos(obj.re), obj.im * np.tan(obj.re) / np.cos(obj.re))
+    return Dual(1 / np.cos(obj.re),
+                obj.im * np.tan(obj.re) / np.cos(obj.re))
 
 
 def cot(obj):
@@ -64,12 +66,14 @@ def cot(obj):
 
 def arccsc(obj):
     obj = to_dual(obj)
-    return Dual(np.arcsin(1 / obj.re), - obj.im / (obj.re ** 2 * np.sqrt(1 - 1 / obj.re ** 2)))
+    return Dual(np.arcsin(1 / obj.re),
+                - obj.im / (obj.re ** 2 * np.sqrt(1 - 1 / obj.re ** 2)))
 
 
 def arcsec(obj):
     obj = to_dual(obj)
-    return Dual(np.arccos(1 / obj.re), obj.im / (obj.re ** 2 * np.sqrt(1 - 1 / obj.re ** 2)))
+    return Dual(np.arccos(1 / obj.re),
+                obj.im / (obj.re ** 2 * np.sqrt(1 - 1 / obj.re ** 2)))
 
 
 def arccot(obj):
@@ -80,10 +84,11 @@ def arccot(obj):
 def sinc(obj, norm=True):
     if norm:
         obj = to_dual(obj)
-        return Dual(np.sinc(obj.re), \
-                    obj.im * (obj.re * np.cos(obj.re * pi) \
+        return Dual(np.sinc(obj.re),
+                    obj.im * (obj.re * np.cos(obj.re * pi)
                               - np.sin(obj.re * pi) / pi) / obj.re ** 2)
     else:
         obj = to_dual(obj)
-        return Dual(np.sinc(obj.re / pi), \
-                    obj.im * (obj.re * np.cos(obj.re) - np.sin(obj.re)) / obj.re ** 2)
+        return Dual(np.sinc(obj.re / pi),
+                    obj.im * (obj.re * np.cos(obj.re) - np.sin(obj.re))
+                           / obj.re ** 2)

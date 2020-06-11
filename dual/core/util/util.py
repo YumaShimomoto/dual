@@ -58,53 +58,36 @@ def is_skey_symmetry_d(obj):
 #######
 def array(obj1, obj2=None, dtype=None, copy=True, order="K", subok=False, ndmin=0):
     if obj2 is None:
-        return Dual(np.array(obj1, copy=copy, order=order, subok=subok, ndmin=ndmin), \
-                    np.array(obj1, copy=copy, order=order, subok=subok, ndmin=ndmin), \
+        return Dual(np.array(obj1, copy=copy, order=order, subok=subok,
+                             ndmin=ndmin),
+                    np.array(obj1, copy=copy, order=order, subok=subok,
+                             ndmin=ndmin),
                     dtype=dtype)
     else:
-        return Dual(np.array(obj1, copy=copy, order=order, subok=subok, ndmin=ndmin), \
-                    np.array(obj2, copy=copy, order=order, subok=subok, ndmin=ndmin), \
+        return Dual(np.array(obj1, copy=copy, order=order, subok=subok,
+                             ndmin=ndmin),
+                    np.array(obj2, copy=copy, order=order, subok=subok,
+                             ndmin=ndmin),
                     dtype=dtype)
 
 
-def arange(stop, start=None, step=None, stop_im=None, start_im=None, step_im=None,  dtype=None):
-    if stop_im is None:
-        stop_im = stop
-    if start_im is None:
-        start_im = start
-    if step_im is None:
-        step_im = step
-    return Dual(np.arange(start, stop, step), np.arange(start_im, stop_im, step_im), dtype=dtype)
+def arange(stop, start=None, step=None,  dtype=None):
+    x = np.arange(start, stop, step)
+    return Dual(x, np.ones_like(x), dtype=dtype)
 
 
-def linspace(start, stop, num=50, start_im=None, stop_im=None, num_im=None, \
+def linspace(start, stop, num=50,
              endpoint=True, retstep=False, dtype=None, axis=0):
-    if start_im is None:
-        startim = start
-    if stop_im is None:
-        stop_im = stop
-    if num_im is None:
-        num_im = num
-    return Dual(np.linspace(start, stop, num=num, endpoint=endpoint, retstep=retstep, \
-                            axis=axis), \
-                np.linspace(start_im, stop_im, num=num_im, endpoint=endpoint, retstep=retstep, \
-                             axis=axis), \
-                dtype=dtype)
+    x = np.linspace(start, stop, num=num,
+                    endpoint=endpoint, retstep=retstep, axis=axis)
+    return Dual(x, np.ones_like(x), dtype=dtype)
 
 
-def logspace(start, stop, num=50, start_im=None, stop_im=None, num_im=None, \
+def logspace(start, stop, num=50,
              endpoint=True, base=10.0, dtype=None, axis=0):
-    if start_im is None:
-        start_im = start
-    if stop_im is None:
-        stop_im = stop
-    if num_im is None:
-        num_im = num
-    return Dual(np.logspace(start, stop, num=num, \
-                            endpoint=endpoint, base=base, axis=axis), \
-                np.logspace(start_im, stop_im, num=num_im, \
-                            endpoint=endpoint, base=base, axis=axis), \
-                dtype=dtype)
+    x = np.logspace(start, stop, num=num,
+                    endpoint=endpoint, base=base, axis=axis)
+    return Dual(x, np.ones_like(x), dtype=dtyoe)
 
 
 def mgrid(*xi, imag=1, **kwargs):
@@ -118,81 +101,95 @@ def ogrid(*xi, imag=1, **kwargs):
 
 
 def zeros(shape, dtype=np.float, order="C"):
-    return Dual(np.zeros(shape, order=order), np.zeros(shape_im, order=order), dtype=dtype)
+    return Dual(np.zeros(shape, order=order),
+                np.ones(shape, order=order),
+                dtype=dtype)
 
 
 def zeros_like(a, dtype=None, order="K", subok=True):
     if is_dual(a):
-        return Dual(np.zeros_like(a.re, order=order, subok=subok), \
-                    np.zeros_like(a.re, order=order, subok=subok), dtype=dtype)
+        return Dual(np.zeros_like(a.re, order=order, subok=subok),
+                    np.ones_like(a.im, order=order, subok=subok),
+                    dtype=dtype)
     else:
-        return Dual(np.zeros_like(a, order=order, subok=subok), \
-                    np.zeros_like(a, order=order, subok=subok), dtype=dtype)
+        return Dual(np.zeros_like(a, order=order, subok=subok),
+                    np.ones_like(a, order=order, subok=subok),
+                    dtype=dtype)
 
 
 def ones(shape, dtype=np.float, order="C"):
-    return Dual(np.ones(shape, order=order), np.ones(shape, order=order), dtype=dtype)
+    return Dual(np.ones(shape, order=order),
+                np.ones(shape, order=order),
+                dtype=dtype)
 
 
 def ones_like(a, dtype=None, order="K", subok=True):
     if is_dual(a):
-        return Dual(np.ones_like(a.re, order=order, subok=subok), \
-                    np.ones_like(a.re, order=order, subok=subok), dtype=dtype)
+        return Dual(np.ones_like(a.re, order=order, subok=subok),
+                    np.ones_like(a.im, order=order, subok=subok),
+                    dtype=dtype)
     else:
-        return Dual(np.ones_like(a, order=order, subok=subok), \
-                    np.ones_like(a, order=order, subok=subok), dtype=dtype)
+        return Dual(np.ones_like(a, order=order, subok=subok),
+                    np.ones_like(a, order=order, subok=subok),
+                    dtype=dtype)
 
 
 def empty(shape, dtype=np.float, order="C"):
-    return Dual(np.empty(shape, order=order), np.empty(shape, order=order), dtype=dtype)
+    return Dual(np.empty(shape, order=order),
+                np.ones(shape, order=order),
+                dtype=dtype)
 
 
 def empty_like(prototype, dtype=None, order="K", subok=True, shape=None):
     if is_dual(prototype):
-        return Dual(np.empty_like(prototype.re, order=order, subok=subok, shape=shape), \
-                    np.empty_like(prototype.re, order=order, subok=subok, shape=shape), \
+        return Dual(np.empty_like(prototype.re, order=order, subok=subok,
+                                  shape=shape),
+                    np.ones_like(prototype.re, order=order, subok=subok,
+                                 shape=shape),
                     dtype=dtype)
     else:
-        return Dual(np.empty_like(prototype, order=order, subok=subok, shape=shape), \
-                    np.empty_like(prototype, order=order, subok=subok, shape=shape), \
+        return Dual(np.empty_like(prototype, order=order, subok=subok,
+                                  shape=shape),
+                    np.ones_like(prototype, order=order, subok=subok,
+                                 shape=shape),
                     dtype=dtype)
 
 
-def full(shape, fill_value, fill_value_im=None, dtype=None, order="C"):
-    if fill_value_im is None:
-        fill_value_im = fill_value
-    return Dual(np.full(shape, fill_value, order=order), \
-                np.full(shape, fill_value_im, order=order), \
+def full(shape, fill_value,  dtype=None, order="C"):
+    return Dual(np.full(shape, fill_value, order=order),
+                np.full(shape, 1, order=order),
                 dtype=dtype)
 
 
-def full_like(a, fill_value, fill_value_im=None, dtype=None, order="K", subok=True, shape=None):
-    if fill_value_im is None:
-        fill_value_im = fill_value
+def full_like(a, fill_value, dtype=None, order="K", subok=True, shape=None):
     if is_dual(a):
-        return Dual(np.full_like(a.re, fill_value, order=order, subok=subok, shape=shape), \
-                    np.full_like(a.re, fill_value_im, order=order, subok=subok, shape=shape), \
+        return Dual(np.full_like(a.re, fill_value, order=order,
+                                 subok=subok, shape=shape),
+                    np.full_like(a.re, 1, order=order,
+                                 subok=subok, shape=shape),
                     dtype=dtype)
     else:
-        return Dual(np.full_like(a, fill_value, order=order, subok=subok, shape=shape), \
-                    np.full_like(a, fill_value_im, order=order, subok=subok, shape=shape), \
+        return Dual(np.full_like(a, fill_value, order=order,
+                                 subok=subok, shape=shape), \
+                    np.full_like(a, 1, order=order,
+                                 subok=subok, shape=shape),
                     dtype=dtype)
 
 
-def fill_diagonal(a, val, val_im=None, wrap=False):
-    if val_im is None:
-        val_im = val
+def fill_diagonal(a, val, wrap=False):
     if is_dual(a):
-        return Dual(np.fill_diagonal(a.re, val, wrap=wrap), \
-                    np.fill_diagonal(a.im, val_im, wrap=wrap), \
+        return Dual(np.fill_diagonal(a.re, val, wrap=wrap),
+                    np.fill_diagonal(a.im, 1, wrap=wrap),
                     dtype=dtype)
     else:
-        return Dual(np.fill_diagonal(a, val, wrap=wrap), np.fill_diagonal(a, val_im, wrap=wrap), \
+        return Dual(np.fill_diagonal(a, val, wrap=wrap),
+                    np.fill_diagonal(a, 1, wrap=wrap),
                     dtype=dtype)
 
 
 def eye(N, M=None, k=0, dtype=np.float, order="C"):
-    return Dual(np.eye(N, M=M, k=k, order=order), np.eye(N, M=M, k=k, order=order), \
+    return Dual(np.eye(N, M=M, k=k, order=order),
+                np.eye(N, M=M, k=k, order=order), \
                 dtype=dtype)
 
 
@@ -200,20 +197,16 @@ def identity(n, dtype=None):
     return Dual(np.identity(n), np.identity(n), dtype=dtyoe)
 
 
-def tile(A, reps, A_im=None):
+def tile(A, reps):
     if is_dual(A):
-        A_im = A.im
         A = A.re
-    elif A_im is None:
-        A_im = A
+        A_im = np.ones_like(A.im)
 
     return Dual(np.tile(A, reps), np.tile(A_im, reps))
 
 
-def diag(v, v_im=None, k=0):
-    if v_im is None:
-        v_im = v
-    return Dual(np.diag(v, k=k), np.diag(v_im, k=k))
+def diag(v, k=0):
+    return Dual(np.diag(v, k=k), np.diag(1, k=k))
 
 
 def tri(N, M=None, k=0, dtype=float):
@@ -246,12 +239,9 @@ def copy(a, a_im=None, order="K"):
     return Dual(np.copy(a, order=order), np.copy(a_im, order=order))
 
 
-def repeat(a, repeats, a_im=None, repeats_im=None, axis=None):
-    if a_im is None:
-        a_im = a
-    if repeats_im is None:
-        repeats_im = repeats
-    return Dual(np.repeat(a, repeats, axis=axis), np.repeat(a_im, repeats_im, axis=axis))
+def repeat(a, repeats, axis=None):
+    return Dual(np.repeat(a, repeats, axis=axis),
+                np.repeat(np.ones_like(a), repeats, axis=axis))
 
 
 def dcopy(obj, order="K"):
@@ -259,7 +249,7 @@ def dcopy(obj, order="K"):
     return Dual(np.copy(obj.re, order=order), np.copy(obj.im, order=order))
 
 
-def where(condition, condition_im=None,  x=None, y=None):
+def where(condition, condition_im=None, x=None, y=None):
     if condition_im is None:
         condition_im = condition
     if x is None:
@@ -274,7 +264,8 @@ def where(condition, condition_im=None,  x=None, y=None):
 #######
 def broadcast_to(obj, shape):
     obj = to_dual(obj)
-    return Dual(np.broadcast_to(obj.re, shape), np.broadcast_to(obj.im, shape))
+    return Dual(np.broadcast_to(obj.re, shape),
+                np.broadcast_to(obj.im, shape))
 
 
 def _get_arrays(obj_list):
@@ -298,7 +289,8 @@ def _unite(obj_list, func, axis=None, out=None):
         if out is None:
             return Dual(func(re, axis=axis), func(im, axis=axis))
         else:
-            return Dual(func(re, axis=axis, out=out), func(im, axis=axis, out=out))
+            return Dual(func(re, axis=axis, out=out),
+                        func(im, axis=axis, out=out))
 
 
 def concatenate(obj_list, axis=0, out=None):
@@ -344,27 +336,32 @@ def reshape(obj, newshape, order="C"):
 
 def squeeze(obj, axis=None):
     obj = to_dual(obj)
-    return Dual(np.squeeze(obj.re, axis=axis), np.squeeze(obj.im, axis=axis))
+    return Dual(np.squeeze(obj.re, axis=axis),
+                np.squeeze(obj.im, axis=axis))
 
 
 def expand_dims(obj, axis):
     obj = to_dual(obj)
-    return Dual(np.expand_dims(obj.re, axis), np.expand_dims(obj.im, axis))
+    return Dual(np.expand_dims(obj.re, axis),
+                np.expand_dims(obj.im, axis))
 
 
 def ravel(obj, order="C"):
     obj = to_dual(obj)
-    return Dual(np.ravel(obj.re, order=order), np.ravel(obj.im, order=order))
+    return Dual(np.ravel(obj.re, order=order),
+                np.ravel(obj.im, order=order))
 
 
 def transpose(obj, axes=None):
     obj = to_dual(obj)
-    return Dual(np.transpose(obj.re, axes=axes), np.transpose(obj.im, axes=axes))
+    return Dual(np.transpose(obj.re, axes=axes),
+                np.transpose(obj.im, axes=axes))
 
 
 def delete(obj, indices, axis=None):
     obj = to_dual(obj)
-    return Dual(np.delete(obj.re, indices, axis=axis), np.delete(obj.im, indices, axis=axis))
+    return Dual(np.delete(obj.re, indices, axis=axis),
+                np.delete(obj.im, indices, axis=axis))
 
 
 def tril(obj, k=0):
@@ -384,12 +381,14 @@ def diag(obj, k=0):
 
 def roll(obj, shift, axis=None):
     obj = to_dual(obj)
-    return Dual(np.roll(obj.re, shift, axis=axis), np.roll(obj.im, shift, axis=axis))
+    return Dual(np.roll(obj.re, shift, axis=axis),
+                np.roll(obj.im, shift, axis=axis))
 
 
 def rollaxis(obj, axis, start=0):
     obj = to_dual(obj)
-    return Dual(np.rollaxis(obj.re, axis, start=start), np.rollaxis(obj.im, axis, start=start))
+    return Dual(np.rollaxis(obj.re, axis, start=start),
+                np.rollaxis(obj.im, axis, start=start))
 
 
 ##########
@@ -425,27 +424,36 @@ def savez(fname, *args, **kwds):
     np.savez(fname, **dict(zip(_kwrds[0::2], _kwds[1::2])))
 
 
-def savetxt(fname, obj, fmt='%.18e', delimiter=' ', newline='\n', header='', footer='', \
-            comments='# ', encoding=None):
+def savetxt(fname, obj, fmt='%.18e', delimiter=' ', newline='\n',
+            header='', footer='', comments='# ', encoding=None):
     obj = to_dual(obj)
     fname, ext = os.path.splitext(fname)
-    np.savetxt(fname + "_re" + ext, obj.re, fmt=fmt, delimiter=delimiter, newline=newline, \
-               header=header, footer=footer, comments=comments, encoding=encoding)
-    np.savetxt(fname + "_im" + ext, obj.im, fmt=fmt, delimiter=delimiter, newline=newline, \
-               header=header, footer=footer, comments=comments, encoding=encoding)
+    np.savetxt(fname + "_re" + ext, obj.re, fmt=fmt,
+               delimiter=delimiter, newline=newline,
+               header=header, footer=footer, comments=comments,
+               encoding=encoding)
+    np.savetxt(fname + "_im" + ext, obj.im, fmt=fmt,
+               delimiter=delimiter, newline=newline,
+               header=header, footer=footer, comments=comments,
+               encoding=encoding)
 
 
-def load(fname, mmap_mode=None, allow_pickle=False, fix_imports=True, encoding='ASCII'):
+def load(fname, mmap_mode=None, allow_pickle=False, fix_imports=True,
+         encoding='ASCII'):
     if ".npy" in file:
-        return  Dual(np.load(fname.replace(".npy", "_re.npy"), mmap_mode=mmap_mode, \
-                             allow_pickle=allow_pickle, fix_imports=fix_imports, \
-                             encoding=encoding), \
-                     np.load(fname.replace(".npy", "_im.npy"), mmap_mode=mmap_mode, \
-                             allow_pickle=allow_pickle, fix_imports=fix_imports, \
+        return  Dual(np.load(fname.replace(".npy", "_re.npy"),
+                             mmap_mode=mmap_mode,
+                             allow_pickle=allow_pickle,
+                             fix_imports=fix_imports,
+                             encoding=encoding),
+                     np.load(fname.replace(".npy", "_im.npy"),
+                             mmap_mode=mmap_mode,
+                             allow_pickle=allow_pickle,
+                             fix_imports=fix_imports,
                              encoding=encoding))
     elif ".npz" in fname:
-        buf = np.load(fname, mmap_mode=mmap_mode, \
-                      allow_pickle=allow_pickle, fix_imports=fix_imports, \
+        buf = np.load(fname, mmap_mode=mmap_mode,
+                      allow_pickle=allow_pickle, fix_imports=fix_imports,
                       encoding=encoding)
         _args = []
         _kwds = []
@@ -468,13 +476,18 @@ def load(fname, mmap_mode=None, allow_pickle=False, fix_imports=True, encoding='
         return tuple(args), dict(zip(kwds[0::2], kwds[1::2]))
 
 
-def loadtxt(fname, dtype=float, comments='#', delimiter=None, converters=None, skiprows=0, \
-            usecols=None, unpack=False, ndmin=0, encoding='bytes', max_rows=None):
+def loadtxt(fname, dtype=float, comments='#', delimiter=None,
+            converters=None, skiprows=0, usecols=None, unpack=False,
+            ndmin=0, encoding='bytes', max_rows=None):
     fname, ext = os.path.splitext(fname)
-    re = np.loadtxt(fname + "_re" + ext, dtype=dtype, comments=comments, delimiter=delimiter, \
-                    converters=converters, skiprows=skiprows, usecols=usecols, unpack=unpack, \
+    re = np.loadtxt(fname + "_re" + ext, dtype=dtype,
+                    comments=comments, delimiter=delimiter,
+                    converters=converters, skiprows=skiprows,
+                    usecols=usecols, unpack=unpack,
                     ndim=ndim, encoding=encoding, max_rows=max_rows)
-    im = np.loadtxt(fname + "_im" + ext, dtype=dtype, comments=comments, delimiter=delimiter, \
-                    converters=converters, skiprows=skiprows, usecols=usecols, unpack=unpack, \
+    im = np.loadtxt(fname + "_im" + ext, dtype=dtype, comments=comments,
+                    delimiter=delimiter,
+                    converters=converters, skiprows=skiprows,
+                    usecols=usecols, unpack=unpack,
                     ndim=ndim, encoding=encoding, max_rows=max_rows)
     return Dual(re, im)

@@ -6,7 +6,6 @@
 参考：https://github.com/tmurakami1234/my_python_module/blob/master/dual/dual.py
       https://www.pythonprogramming.in/example-of-reversed-magic-method-in-python.html
 """
-
 import numpy as np
 import math
 
@@ -27,7 +26,8 @@ class Dual():
         else:
             if isinstance(re, np.ndarray):
                 # 引数reが「Dual型ではない」かつ「ndarray型である」
-                # Argument 're' is "Type isn't 'Dual'" and "Type is 'ndarray'"
+                # Argument 're' is "Type isn't 'Dual'"
+                # and "Type is 'ndarray'"
                 re_re = re
                 re_im = np.zeros(re.shape)
             else:
@@ -36,7 +36,8 @@ class Dual():
         if is_dual(im):
             if isinstance(im.re, np.ndarray):
                 # 引数imが「Dual型である」かつ「ndarray型である」
-                # Argument 'im' is "Type is 'Dual'" and "Type is 'ndarray'"
+                # Argument 'im' is "Type is 'Dual'"
+                # and "Type is 'ndarray'"
                 im_re = im.re
                 im_im = im.im
             else:
@@ -45,7 +46,8 @@ class Dual():
         else:
             if isinstance(im, np.ndarray):
                 # 引数imが「Dual型ではない」かつ「ndarray型である」
-                # Argument 'im' is "Type isn't 'Dual'" and "Type is 'ndarray'"
+                # Argument 'im' is "Type isn't 'Dual'"
+                # and "Type is 'ndarray'"
                 im_re = im
                 im_im = np.zeros(im.shape)
             else:
@@ -219,8 +221,10 @@ class Dual():
 
     def __matmul__(self, other):
         """
-        python3.5以上かつNumpy1.10以上で実装されている行列積演算子@の動作定義
-        Define behavior of matrix product operator '@' implemented in python3.5 or higher and Numpy 1.10 or higher.
+        python3.5以上かつNumpy1.10以上で実装されている
+        行列積演算子@の動作定義
+        Define behavior of matrix product operator '@'
+        implemented in python3.5 or higher and Numpy 1.10 or higher.
         """
         other = to_dual(other)
 
@@ -240,7 +244,8 @@ class Dual():
             self_buf = Dual(np.copy(self.re), np.copy(self.im))
         if other.ndim == 0:
             other_shape = "point"
-            other_buf = Dual(np.array([[other.re]]), np.array([[other.im]]))
+            other_buf = Dual(np.array([[other.re]]),
+                             np.array([[other.im]]))
         elif other.ndim == 1:
             other_shape = "vector"
             other_buf = Dual(np.array([other.re]), np.array([other.im]))
@@ -250,9 +255,11 @@ class Dual():
 
         # 行列積 matrix product
         # 行列積の制約を満たさない計算はエラーが起こる。
-        # Calculations that do not satisfy the matrix product constraint will result in an error.
-        cal_buf = Dual(self_buf.re @ other_buf.re, \
-                       self_buf.im @ other_buf.re + self_buf.re @ other_buf.im)
+        # Calculations that do not satisfy the matrix product constraint
+        # will result in an error.
+        cal_buf = Dual(self_buf.re @ other_buf.re,
+                       self_buf.im @ other_buf.re
+                       + self_buf.re @ other_buf.im)
 
         # 形状復元 Shape restoration
         # (m, n) <= m行n列 'm':number of row, 'n':number of column
@@ -299,7 +306,8 @@ class Dual():
         d = other.re * other.re
         if not np.all(d):
             raise ZeroDivisionError("math domain error")
-        return Dual(self.re * other.re / d, (self.im * other.re - self.re * other.im) / d)
+        return Dual(self.re * other.re / d,
+                    (self.im * other.re - self.re * other.im) / d)
 
 
     def __floordiv__(self, other):
@@ -342,7 +350,8 @@ class Dual():
             X ** Y = a
         else:
             上記の通りa, b, arg(X)それぞれを計算する。
-            As mentioned above after calculating each buf value; a, b, arg(X).
+            As mentioned above after calculating each buf value;
+                a, b, arg(X).
         """
         if is_dual(other):
             # otherがDual型の場合
@@ -356,7 +365,8 @@ class Dual():
                     if self.im:
                         alpha = abs(self) ** other.re
                         argX = math.atan(self.im / self.re)
-                        beta = other.im * math.log(abs(self)) + other.re * argX
+                        beta = (other.im * math.log(abs(self))
+                                + other.re * argX)
                     else:
                         alpha = self.re ** other.re
                         beta = other.im * math.log(abs(self.re))
@@ -368,9 +378,11 @@ class Dual():
                         beta = other.re * argX
                         return Dual(alpha, alpha * beta)
                     else:
-                        # other.imもself.imも0の場合は数値に変換して計算させる。
+                        # other.imもself.imも0の場合は
+                        # 数値に変換して計算させる。
                         # If 'other.im' and 'self.im' is 0,
-                        # calculate it by converting it to a numerical value.
+                        # calculate it by converting it
+                        # to a numerical value.
                         other = other.re
             else:
                 # それ以外の場合は定義通り計算する。
@@ -378,11 +390,12 @@ class Dual():
                 absX = abs(self)
                 alpha = absX ** other.re
                 argX = np.arctan(self.im / self.re)
-                beta = other.im * math.log(absX) + other.re * argX
+                beta = other.im * np.log(absX) + other.re * argX
                 return Dual(alpha, alpha * beta)
         # otherがDual型ではない場合は普通に計算して返す。
         # If the type of 'other' isn't 'Dual', return Numpy calculations.
-        return Dual(np.power(self.re, other), other * np.power(self.re, other - 1) * self.im)
+        return Dual(np.power(self.re, other),
+                    other * np.power(self.re, other - 1) * self.im)
 
 
     def __lshift__(self, other):
@@ -521,7 +534,8 @@ class Dual():
 
     def __complex__(self):
         if self.ndim != 0:
-            raise ValueError("Can't convert Dual with vector or matrix to complex.")
+            raise ValueError(
+                    "Can't convert Dual with vector or matrix to complex.")
         return complex(self.re, self.im)
 
 
@@ -533,12 +547,14 @@ class Dual():
 
     def __float__(self):
         if np.any(self.im):
-            raise ValueError("Can't convert Dual with nonzero im to float.")
+            raise ValueError(
+                    "Can't convert Dual with nonzero im to float.")
         return float(self.re)
 
 
     def __round__(self, ndigits=0):
-        return Dual(np.round(self.re, decimal=ndigits), np.round(self.im, decimal=ndigits))
+        return Dual(np.round(self.re, decimal=ndigits),
+                    np.round(self.im, decimal=ndigits))
 
 
     def __trunc__(self):
@@ -564,7 +580,8 @@ class Dual():
 
 
     def broadcast_to(self, shape):
-        return Dual(np.broadcast_to(self.re, shape), np.broadcast_to(self.im, shape))
+        return Dual(np.broadcast_to(self.re, shape),
+                    np.broadcast_to(self.im, shape))
 
 
     def reshape(self, shape, order="C"):
@@ -573,38 +590,48 @@ class Dual():
 
 
     def squeeze(self, axis=None):
-        return Dual(np.squeeze(self.re, axis=axis), np.squeeze(self.im, axis=axis))
+        return Dual(np.squeeze(self.re, axis=axis),
+                    np.squeeze(self.im, axis=axis))
 
 
     def ravel(self, order="C"):
-        return Dual(np.ravel(self.re, order=order), np.ravel(self.im, order=order))
+        return Dual(np.ravel(self.re, order=order),
+                    np.ravel(self.im, order=order))
 
 
     def flatten(self, order="C"):
         try:
-            return Dual(self.re.flatten(order=order), self.im.flatten(order=order))
+            return Dual(self.re.flatten(order=order),
+                        self.im.flatten(order=order))
         except:
             return self
 
 
     def transpose(self, axes=None):
-        return Dual(np.transpose(self.re, axes=axes), np.transpose(self.im, axes=axes))
+        return Dual(np.transpose(self.re, axes=axes),
+                    np.transpose(self.im, axes=axes))
 
 
     def diagonal(self, offset=0, axis1=0, axis2=1):
-        return Dual(self.re.diagonal(offset=offset, axis1=axis1, axis2=axis2), \
-                    self.im.diagonal(offset=offset, axis1=axis1, axis2=axis2))
+        return Dual(self.re.diagonal(offset=offset,
+                                     axis1=axis1, axis2=axis2),
+                    self.im.diagonal(offset=offset,
+                                     axis1=axis1, axis2=axis2))
 
 
-    def astype(self, dtype, order='K', casting='unsafe', subok=True, copy=True):
-        return Dual(self.re.astype(dtype, order=order, casting=casting, subok=subok, copy=copy), \
-                    self.im.astype(dtype, order=order, casting=casting, subok=subok, copy=copy))
+    def astype(self, dtype, order='K', casting='unsafe',
+               subok=True, copy=True):
+        return Dual(self.re.astype(dtype, order=order, casting=casting,
+                                   subok=subok, copy=copy),
+                    self.im.astype(dtype, order=order, casting=casting,
+                                   subok=subok, copy=copy))
 
 
     @property
     def complex(self):
         try:
-            return np.array([complex(x.re, x.im) for x in self]).reshape(self.shape)
+            return np.array(
+                    [complex(x.re, x.im) for x in self]).reshape(self.shape)
         except:
             return complex(self.re, self.im)
 
